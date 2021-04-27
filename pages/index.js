@@ -1,6 +1,7 @@
 import * as React from "react"
+import _ from "lodash"
 import Head from "next/head"
-import { faPlay } from "@fortawesome/free-solid-svg-icons"
+import { faPause, faPlay, faStop } from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import styles from "../styles/Home.module.css"
@@ -14,6 +15,7 @@ const STATE_FADEOUT = "STATE_FADEOUT"
 
 export default function Home() {
   const waveFormRef = React.useRef(null)
+  const [playList, setPlaylist] = React.useState({})
   const [player, setPlayer] = React.useState(null)
   const [isPlaying, setIsPlaying] = React.useState(false)
   const [stateButton, setStateButton] = React.useState(STATE_CURSOR)
@@ -34,15 +36,16 @@ export default function Home() {
       document.getElementsByClassName("btn-loop")[0].classList.add("disabled")
     }
 
-    $audioStart.val(cueFormatters(format)(start))
-    $audioEnd.val(cueFormatters(format)(end))
+    // $audioStart.val(cueFormatters(format)(start))
+    // $audioEnd.val(cueFormatters(format)(end))
 
-    startTime = start
-    endTime = end
+    // startTime = start
+    // endTime = end
   }
 
   React.useEffect(() => {
     const waveFormNode = waveFormRef.current
+    const audioCtx = new window.AudioContext()
 
     var playlist = WaveformPlaylist({
       samplesPerPixel: 3000,
@@ -51,6 +54,8 @@ export default function Home() {
       waveHeight: 100,
       container: waveFormNode,
       state: "cursor",
+      isContinuousPlay: true,
+      timescale: true,
       waveOutlineColor: "#E0EFF1",
       colors: {
         waveOutlineColor: "#E0EFF1",
@@ -60,13 +65,6 @@ export default function Home() {
       controls: {
         show: false, //whether or not to include the track controls
         width: 200, //width of controls in pixels
-        widgets: {
-          muteOrSolo: true,
-          volume: true,
-          stereoPan: false,
-          collapse: false,
-          remove: false,
-        },
       },
     })
 
@@ -78,11 +76,41 @@ export default function Home() {
         },
       ])
       .then(function () {
+        setPlaylist(playlist)
         var ee = playlist.getEventEmitter()
         setPlayer(ee)
         ee.on("select", updateSelect)
+
+        document.addEventListener("keyup", e => {
+          if (e.key === "x") {
+            cutClipAtCursor(playlist)
+            console.log(playlist)
+          }
+        })
       })
   }, [waveFormRef])
+
+  const cutClipAtCursor = playlist => {
+    // Cut the current and new tracks
+    const activeTrack = playlist.getActiveTrack()
+    const newClip = _.cloneDeep(activeTrack)
+    const cursor = playlist.cursor
+    var timeSelection = playlist.getTimeSelection()
+
+    // cutting the initial clip
+    activeTrack.trim(0, cursor)
+    activeTrack.calculatePeaks(playlist.samplesPerPixel, playlist.sampleRate)
+
+    // cut the newClip
+    newClip.trim(cursor, newClip.cueOut + 1) // find finction to get cueOut
+    newClip.calculatePeaks(playlist.samplesPerPixel, playlist.sampleRate)
+    playlist.tracks.push(newClip)
+    // playlist.setTimeSelection(0, 0)
+    playlist.drawRequest()
+
+    // define them uniquely
+    // splice together
+  }
 
   return (
     <>
@@ -99,7 +127,7 @@ export default function Home() {
             <div className="post-content">
               <div id="top-bar" className="playlist-top-bar">
                 <div className="playlist-toolbar">
-                  <div className="btn-group">
+                  <div className="btn-group btn-playlist-state-group">
                     <button
                       type="button"
                       className={`btn-pause btn btn-outline-warning ${
@@ -111,11 +139,11 @@ export default function Home() {
                         setIsPlaying(false)
                       }}
                     >
-                      <FontAwesomeIcon icon={faPlay} />
+                      <FontAwesomeIcon icon={faPause} />
                     </button>
                     <button
                       type="button"
-                      className={`btn-play btn btn-outline-success ${
+                      className={`rounded-left btn-play btn btn-outline-success ${
                         isPlaying ? "hidden" : ""
                       }`}
                       title="Play"
@@ -124,7 +152,7 @@ export default function Home() {
                         setIsPlaying(true)
                       }}
                     >
-                      <i className="fas fa-play"></i>
+                      <FontAwesomeIcon icon={faPlay} />
                     </button>
                     <button
                       type="button"
@@ -135,11 +163,9 @@ export default function Home() {
                         setIsPlaying(false)
                       }}
                     >
-                      <i className="fas fa-stop"></i>
+                      <FontAwesomeIcon icon={faStop} />
                     </button>
-                  </div>
 
-                  <div className="btn-group btn-playlist-state-group">
                     <button
                       type="button"
                       className={`btn-cursor btn btn-outline-dark ${
@@ -173,7 +199,7 @@ export default function Home() {
                       }`}
                       title="Shift audio in time"
                       onClick={e => {
-                        player.emit("statechange", "cursor")
+                        player.emit("statechange", "shift")
                         setStateButton(STATE_SHIFT)
                       }}
                     >
