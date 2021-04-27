@@ -14,7 +14,6 @@ const STATE_FADEOUT = "STATE_FADEOUT"
 
 export default function Home() {
   const waveFormRef = React.useRef(null)
-  const [playList, setPlaylist] = React.useState({})
   const [player, setPlayer] = React.useState(null)
   const [isPlaying, setIsPlaying] = React.useState(false)
   const [stateButton, setStateButton] = React.useState(STATE_CURSOR)
@@ -35,11 +34,11 @@ export default function Home() {
       document.getElementsByClassName("btn-loop")[0].classList.add("disabled")
     }
 
-    // $audioStart.val(cueFormatters(format)(start))
-    // $audioEnd.val(cueFormatters(format)(end))
+    $audioStart.val(cueFormatters(format)(start))
+    $audioEnd.val(cueFormatters(format)(end))
 
-    // startTime = start
-    // endTime = end
+    startTime = start
+    endTime = end
   }
 
   React.useEffect(() => {
@@ -61,48 +60,29 @@ export default function Home() {
       controls: {
         show: false, //whether or not to include the track controls
         width: 200, //width of controls in pixels
+        widgets: {
+          muteOrSolo: true,
+          volume: true,
+          stereoPan: false,
+          collapse: false,
+          remove: false,
+        },
       },
     })
 
     playlist
       .load([
         {
-          src: "media/BassDrums30.mp3",
+          src: "media/_Miles_1.wav",
           name: "Vocals",
         },
       ])
       .then(function () {
-        setPlaylist(playlist)
         var ee = playlist.getEventEmitter()
         setPlayer(ee)
         ee.on("select", updateSelect)
-
-        document.addEventListener("keyup", e => {
-          if (e.key === "x") {
-            playlist.tracks.push(clonedObject(playlist.activeTrack))
-            playlist.activeTrack.id = "ACTIVE"
-            cutClip(currentClip, newClip)
-            console.log(playlist)
-            // Redraw the playlist HERE
-          }
-        })
       })
-  }, [])
-
-  const cutClip = (currentClip, newClip) => {
-    // Cut the current and new tracks
-    // define them uniquely
-    // splice together
-  }
-
-  const clonedObject = obj => {
-    const clonedObj = Object.assign(
-      Object.create(Object.getPrototypeOf(obj)),
-      obj
-    )
-    clonedObj.id = "is_cloned"
-    return clonedObj
-  }
+  }, [waveFormRef])
 
   return (
     <>
