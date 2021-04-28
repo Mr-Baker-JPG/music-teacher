@@ -3,6 +3,8 @@ import _ from "lodash"
 import Head from "next/head"
 import {
   faArrowCircleRight,
+  faArrowLeft,
+  faArrowRight,
   faArrowsAltH,
   faHeadphones,
   faItalic,
@@ -14,13 +16,15 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import styles from "../styles/Home.module.css"
-import WaveformPlaylist from "waveform-playlist"
+import WaveformPlaylist from "../lib/waveform-playlist/src/app"
 
 const STATE_CURSOR = "STATE_CURSOR"
 const STATE_SELECT = "STATE_SELECT"
 const STATE_SHIFT = "STATE_SHIFT"
 const STATE_FADEIN = "STATE_FADEIN"
 const STATE_FADEOUT = "STATE_FADEOUT"
+const STATE_RESIZE_LEFT = "STATE_RESIZE_LEFT"
+const STATE_RESIZE_RIGHT = "STATE_RESIZE_RIGHT"
 
 export default function Home() {
   const waveFormRef = React.useRef(null)
@@ -92,46 +96,48 @@ export default function Home() {
 
         ee.on("shift", shift(playlist))
 
-        document.addEventListener("keyup", async e => {
+        document.addEventListener("keyup", e => {
           if (e.key === "x") {
-            await cutClipAtCursor(playlist)
+            cutClipAtCursor(playlist)
           }
         })
       })
   }, [waveFormRef])
 
+  const isActiveInFront = (activeTrack, track) =>
+    activeTrack.getStartTime() > track.getStartTime()
+
+  const isActiveInBack = (activeTrack, track) =>
+    activeTrack.getStartTime() < track.getStartTime()
+
+  const movingRight = deltaTime => deltaTime > 0
+  const movingLeft = deltaTime => deltaTime < 0
+
   const shift = playlist => (deltaTime, activeTrack) => {
-    // Go through the tracks
-    const ee = playlist.getEventEmitter()
-    const activeStartTime = activeTrack.getStartTime()
-    const activeEndTime = activeTrack.getEndTime()
     playlist.tracks.forEach(track => {
+      const endTime = track.getEndTime()
+      const startTime = track.getStartTime()
       if (track.name !== activeTrack.name) {
-        const startTime = track.getStartTime()
-        const endTime = track.getEndTime()
-        // Moving left
-        if (deltaTime < 0 && endTime > activeStartTime) {
-          track.setStartTime(startTime + deltaTime)
-          playlist.adjustDuration()
-          playlist.drawRequest()
-          console.log("SHIFT LEFT")
-        } else if (deltaTime > 0 && startTime < activeEndTime) {
-          track.setStartTime(startTime + deltaTime)
-          playlist.adjustDuration()
-          playlist.drawRequest()
-          console.log("SHIFT RIGHT")
+        if (movingLeft(deltaTime)) {
+          if (isActiveInBack(activeTrack, track)) {
+            // track.setCues(activeTrack.getEndTime(), endTime)
+            // track.setStartTime(activeTrack.getEndTime())
+          } else if (isActiveInFront(activeTrack, track)) {
+            track.trim(startTime, activeTrack.getStartTime())
+          }
+        } else if (movingRight(deltaTime)) {
+          if (isActiveInFront(activeTrack, track)) {
+            // track.setCues(startTime, activeTrack.getStartTime())
+          } else if (isActiveInBack(activeTrack, track)) {
+            track.trim(activeTrack.getEndTime(), endTime)
+          }
         }
-        console.log(
-          `Moving Track: ${activeStartTime.toFixed(2)}:${activeEndTime.toFixed(
-            2
-          )} || Track: ${startTime.toFixed(2)}:${endTime.toFixed(2)}`
-        )
-        // if (track.getStartTime()) {
-        //   console.log("cylcing")
-        // }
+        track.calculatePeaks(playlist.samplesPerPixel, playlist.sampleRate)
+        playlist.adjustDuration()
+        playlist.drawRequest()
+        playlist.render()
       }
     })
-    // console.log("shifting", deltaTime, activeTrack)
   }
 
   const copyActiveTrack = async playlist => {
@@ -266,6 +272,32 @@ export default function Home() {
                       }}
                     >
                       <FontAwesomeIcon icon={faArrowsAltH} />
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn-resize-left btn btn-outline-dark ${
+                        stateButton === STATE_RESIZE_LEFT && "active"
+                      }`}
+                      title="Resize audio clip from the left"
+                      onClick={e => {
+                        player.emit("statechange", "resizeleft")
+                        setStateButton(STATE_RESIZE_LEFT)
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faArrowLeft} />
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn-shift btn btn-outline-dark ${
+                        stateButton === STATE_RESIZE_RIGHT && "active"
+                      }`}
+                      title="Resize audio clip from the right"
+                      onClick={e => {
+                        player.emit("statechange", "resizeright")
+                        setStateButton(STATE_RESIZE_RIGHT)
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faArrowRight} />
                     </button>
                     <div className="btn-group btn-select-state-group">
                       <span
