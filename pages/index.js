@@ -1,7 +1,16 @@
 import * as React from "react"
 import _ from "lodash"
 import Head from "next/head"
-import { faPause, faPlay, faStop } from "@fortawesome/free-solid-svg-icons"
+import {
+  faArrowCircleRight,
+  faArrowsAltH,
+  faHeadphones,
+  faItalic,
+  faPause,
+  faPlay,
+  faRedo,
+  faStop,
+} from "@fortawesome/free-solid-svg-icons"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import styles from "../styles/Home.module.css"
@@ -81,32 +90,50 @@ export default function Home() {
         setPlayer(ee)
         ee.on("select", updateSelect)
 
-        document.addEventListener("keyup", e => {
+        document.addEventListener("keyup", async e => {
           if (e.key === "x") {
-            cutClipAtCursor(playlist)
-            console.log(playlist)
+            await cutClipAtCursor(playlist)
+            console.log(playlist.tracks)
           }
         })
       })
   }, [waveFormRef])
 
-  const cutClipAtCursor = playlist => {
+  const copyActiveTrack = async playlist => {
+    const activeTrack = playlist.getActiveTrack()
+    const newName = `${activeTrack.name}_copy_${Math.floor(
+      Math.random() * 100
+    )}`
+    await playlist.load([
+      {
+        src: activeTrack.src,
+        name: newName,
+      },
+    ])
+    return playlist.tracks.filter(track => track.name === newName)[0]
+  }
+
+  const cutClipAtCursor = async playlist => {
     // Cut the current and new tracks
     const activeTrack = playlist.getActiveTrack()
-    const newClip = _.cloneDeep(activeTrack)
+    if (!activeTrack) {
+      return false
+    }
+
+    const newClip = await copyActiveTrack(playlist)
     const cursor = playlist.cursor
-    var timeSelection = playlist.getTimeSelection()
+    console.log(cursor, activeTrack, newClip)
 
     // cutting the initial clip
     activeTrack.trim(0, cursor)
     activeTrack.calculatePeaks(playlist.samplesPerPixel, playlist.sampleRate)
 
     // cut the newClip
-    newClip.trim(cursor, newClip.cueOut + 1) // find finction to get cueOut
+    newClip.trim(cursor, newClip.cueOut) // find finction to get cueOut
     newClip.calculatePeaks(playlist.samplesPerPixel, playlist.sampleRate)
-    playlist.tracks.push(newClip)
-    // playlist.setTimeSelection(0, 0)
+    playlist.setTimeSelection(0, 0)
     playlist.drawRequest()
+    playlist.render()
 
     // define them uniquely
     // splice together
@@ -152,7 +179,7 @@ export default function Home() {
                         setIsPlaying(true)
                       }}
                     >
-                      <FontAwesomeIcon icon={faPlay} />
+                      <FontAwesomeIcon aria-hidden={!isPlaying} icon={faPlay} />
                     </button>
                     <button
                       type="button"
@@ -163,7 +190,7 @@ export default function Home() {
                         setIsPlaying(false)
                       }}
                     >
-                      <FontAwesomeIcon icon={faStop} />
+                      <FontAwesomeIcon aria-hidden={!isPlaying} icon={faStop} />
                     </button>
 
                     <button
@@ -177,7 +204,7 @@ export default function Home() {
                         setStateButton(STATE_CURSOR)
                       }}
                     >
-                      <i className="fas fa-headphones"></i>
+                      <FontAwesomeIcon icon={faHeadphones} />
                     </button>
                     <button
                       type="button"
@@ -190,7 +217,7 @@ export default function Home() {
                         setStateButton(STATE_SELECT)
                       }}
                     >
-                      <i className="fas fa-italic"></i>
+                      <FontAwesomeIcon icon={faItalic} />
                     </button>
                     <button
                       type="button"
@@ -203,14 +230,14 @@ export default function Home() {
                         setStateButton(STATE_SHIFT)
                       }}
                     >
-                      <i className="fas fa-arrows-alt-h"></i>
+                      <FontAwesomeIcon icon={faArrowsAltH} />
                     </button>
                     <div className="btn-group btn-select-state-group">
                       <span
                         className="btn-loop btn btn-success disabled"
                         title="loop a selected segment of audio"
                       >
-                        <i className="fa fa-repeat"></i>
+                        <FontAwesomeIcon icon={faRedo} />
                       </span>
                       <span
                         title="keep only the selected audio region for a track"
