@@ -16,6 +16,14 @@ import AnnotationList from "./annotation/AnnotationList"
 import RecorderWorkerFunction from "./utils/recorderWorker"
 import ExportWavWorkerFunction from "./utils/exportWavWorker"
 
+const movingRight = deltaTime => deltaTime > 0
+const movingLeft = deltaTime => deltaTime < 0
+const isActiveInFront = (activeTrack, track) =>
+  activeTrack.getStartTime() >= track.getStartTime()
+
+const isActiveInBack = (activeTrack, track) =>
+  activeTrack.getStartTime() <= track.getStartTime()
+
 export default class {
   constructor() {
     this.tracks = []
@@ -215,12 +223,56 @@ export default class {
       this.drawRequest()
     })
 
-    ee.on("resizeright", () => {
-      console.log("resizing right")
+    // TODO: Caleb get this logic to work!
+    ee.on("resizeright", (deltaTime, activeTrack) => {
+      if (deltaTime === 0) return
+      if (movingLeft(deltaTime)) {
+        console.log("moving left")
+        activeTrack.trim(
+          activeTrack.getStartTime(),
+          activeTrack.getEndTime() + deltaTime
+        )
+      } else if (movingRight(deltaTime)) {
+        console.log("moving right")
+        activeTrack.setCues(
+          activeTrack.getStartTime(),
+          activeTrack.getEndTime() + deltaTime
+        )
+
+        // if overlap resize overlapped clip
+        this.tracks.forEach(track => {
+          console.log(
+            isActiveInFront(activeTrack, track),
+            activeTrack.getStartTime(),
+            track.getEndTime()
+          )
+
+          if (isActiveInFront(activeTrack, track)) {
+            track.setCues(activeTrack.getEndTime(), track.getEndTime())
+          }
+          track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
+        })
+      }
+      activeTrack.calculatePeaks(this.samplesPerPixel, this.sampleRate)
+      this.adjustDuration()
+      this.drawRequest()
     })
 
-    ee.on("resizeleft", () => {
-      console.log("resizing left")
+    // TODO: Caleb get this logic to work!
+    ee.on("resizeleft", (deltaTime, track) => {
+      if (deltaTime === 0) return
+      if (movingLeft(deltaTime)) {
+        console.log("moving left")
+        track.setCues(track.getStartTime() + deltaTime, track.getEndTime())
+        track.setStartTime(track.getStartTime() + deltaTime)
+      } else if (movingRight(deltaTime)) {
+        console.log("moving right")
+        track.trim(track.getStartTime() + deltaTime, track.getEndTime())
+        // track.setStartTime(track.getStartTime() + deltaTime)
+      }
+      track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
+      this.adjustDuration()
+      this.drawRequest()
     })
 
     ee.on("record", () => {

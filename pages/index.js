@@ -16,7 +16,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 import styles from "../styles/Home.module.css"
-import WaveformPlaylist from "../lib/waveform-playlist/src/app"
+import WaveformPlaylist from "../library/waveform-playlist/src/app"
 
 const STATE_CURSOR = "STATE_CURSOR"
 const STATE_SELECT = "STATE_SELECT"
