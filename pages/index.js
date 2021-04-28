@@ -93,7 +93,6 @@ export default function Home() {
         document.addEventListener("keyup", async e => {
           if (e.key === "x") {
             await cutClipAtCursor(playlist)
-            console.log(playlist.tracks)
           }
         })
       })
@@ -122,15 +121,15 @@ export default function Home() {
 
     const newClip = await copyActiveTrack(playlist)
     const cursor = playlist.cursor
-    console.log(cursor, activeTrack, newClip)
+
+    // cut the newClip
+    newClip.trim(cursor, activeTrack.cueOut) // find finction to get cueOut
+    newClip.calculatePeaks(playlist.samplesPerPixel, playlist.sampleRate)
 
     // cutting the initial clip
     activeTrack.trim(0, cursor)
     activeTrack.calculatePeaks(playlist.samplesPerPixel, playlist.sampleRate)
 
-    // cut the newClip
-    newClip.trim(cursor, newClip.cueOut) // find finction to get cueOut
-    newClip.calculatePeaks(playlist.samplesPerPixel, playlist.sampleRate)
     playlist.setTimeSelection(0, 0)
     playlist.drawRequest()
     playlist.render()
