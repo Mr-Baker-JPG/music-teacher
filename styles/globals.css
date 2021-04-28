@@ -87,6 +87,14 @@ a:focus {
   cursor: ew-resize;
 }
 
+.playlist .state-resize-right {
+  cursor: e-resize;
+}
+
+.playlist .state-resize-left {
+  cursor: w-resize;
+}
+
 .playlist .selection.point {
   background: red;
 }
