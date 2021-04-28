@@ -86,9 +86,11 @@ export default function Home() {
       ])
       .then(function () {
         setPlaylist(playlist)
-        var ee = playlist.getEventEmitter()
+        const ee = playlist.getEventEmitter()
         setPlayer(ee)
         ee.on("select", updateSelect)
+
+        ee.on("shift", shift(playlist))
 
         document.addEventListener("keyup", async e => {
           if (e.key === "x") {
@@ -97,6 +99,40 @@ export default function Home() {
         })
       })
   }, [waveFormRef])
+
+  const shift = playlist => (deltaTime, activeTrack) => {
+    // Go through the tracks
+    const ee = playlist.getEventEmitter()
+    const activeStartTime = activeTrack.getStartTime()
+    const activeEndTime = activeTrack.getEndTime()
+    playlist.tracks.forEach(track => {
+      if (track.name !== activeTrack.name) {
+        const startTime = track.getStartTime()
+        const endTime = track.getEndTime()
+        // Moving left
+        if (deltaTime < 0 && endTime > activeStartTime) {
+          track.setStartTime(startTime + deltaTime)
+          playlist.adjustDuration()
+          playlist.drawRequest()
+          console.log("SHIFT LEFT")
+        } else if (deltaTime > 0 && startTime < activeEndTime) {
+          track.setStartTime(startTime + deltaTime)
+          playlist.adjustDuration()
+          playlist.drawRequest()
+          console.log("SHIFT RIGHT")
+        }
+        console.log(
+          `Moving Track: ${activeStartTime.toFixed(2)}:${activeEndTime.toFixed(
+            2
+          )} || Track: ${startTime.toFixed(2)}:${endTime.toFixed(2)}`
+        )
+        // if (track.getStartTime()) {
+        //   console.log("cylcing")
+        // }
+      }
+    })
+    // console.log("shifting", deltaTime, activeTrack)
+  }
 
   const copyActiveTrack = async playlist => {
     const activeTrack = playlist.getActiveTrack()
