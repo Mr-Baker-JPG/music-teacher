@@ -223,7 +223,7 @@ export default class {
       this.drawRequest()
     })
 
-    // TODO: Caleb get this logic to work!
+    // TODO: Aaron get this logic to work!
     ee.on("resizeright", (deltaTime, activeTrack) => {
       if (deltaTime === 0) return
       if (movingLeft(deltaTime)) {
@@ -248,7 +248,7 @@ export default class {
           )
 
           if (isActiveInFront(activeTrack, track)) {
-            track.setCues(activeTrack.getEndTime(), track.getEndTime())
+            track.setCues(activeTrack.getEndTime(), track.getStartTime())
           }
           track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
         })
@@ -258,7 +258,7 @@ export default class {
       this.drawRequest()
     })
 
-    // TODO: Caleb get this logic to work!
+    // TODO: Aaron get this logic to work!
     ee.on("resizeleft", (deltaTime, track) => {
       if (deltaTime === 0) return
       if (movingLeft(deltaTime)) {
