@@ -21,6 +21,15 @@ const movingLeft = deltaTime => deltaTime < 0
 const isActiveInFront = (activeTrack, track) =>
   activeTrack.getStartTime() >= track.getStartTime()
 
+const isActiveTrackBehind = (activeTrack, track) =>
+  activeTrack.getStartTime() < track.getStartTime() &&
+  activeTrack.getEndTime() >= track.getStartTime() &&
+  track.getStartTime() !== track.getEndTime()
+const isActiveTrackBefore = (activeTrack, track) =>
+  track.getStartTime() < activeTrack.getStartTime() &&
+  track.getEndTime() >= activeTrack.getStartTime() &&
+  track.getStartTime() !== track.getEndTime()
+
 const isActiveInBack = (activeTrack, track) =>
   activeTrack.getStartTime() <= track.getStartTime()
 
@@ -217,8 +226,31 @@ export default class {
       this.drawRequest()
     })
 
-    ee.on("shift", (deltaTime, track) => {
-      track.setStartTime(track.getStartTime() + deltaTime)
+    ee.on("shift", (deltaTime, activeTrack) => {
+      activeTrack.setStartTime(activeTrack.getStartTime() + deltaTime)
+      // this.adjustDuration()
+      // this.drawRequest()
+      this.tracks.forEach(track => {
+        const endTime = track.getEndTime()
+        const startTime = track.getStartTime()
+        if (track.name !== activeTrack.name) {
+          if (movingLeft(deltaTime)) {
+            if (isActiveInBack(activeTrack, track)) {
+              // track.setCues(activeTrack.getEndTime(), endTime)
+              // track.setStartTime(activeTrack.getEndTime())
+            } else if (isActiveInFront(activeTrack, track)) {
+              track.trim(startTime, activeTrack.getStartTime())
+            }
+          } else if (movingRight(deltaTime)) {
+            if (isActiveInFront(activeTrack, track)) {
+              // track.setCues(startTime, activeTrack.getStartTime())
+            } else if (isActiveInBack(activeTrack, track)) {
+              track.trim(activeTrack.getEndTime(), endTime)
+            }
+          }
+          track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
+        }
+      })
       this.adjustDuration()
       this.drawRequest()
     })
@@ -241,14 +273,9 @@ export default class {
 
         // if overlap resize overlapped clip
         this.tracks.forEach(track => {
-          console.log(
-            isActiveInFront(activeTrack, track),
-            activeTrack.getStartTime(),
-            track.getEndTime()
-          )
-
-          if (isActiveInFront(activeTrack, track)) {
+          if (isActiveTrackBehind(activeTrack, track)) {
             track.setCues(activeTrack.getEndTime(), track.getEndTime())
+            track.setStartTime(activeTrack.getEndTime())
           }
           track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
         })
@@ -259,18 +286,31 @@ export default class {
     })
 
     // TODO: Caleb get this logic to work!
-    ee.on("resizeleft", (deltaTime, track) => {
+    ee.on("resizeleft", (deltaTime, activeTrack) => {
       if (deltaTime === 0) return
       if (movingLeft(deltaTime)) {
         console.log("moving left")
-        track.setCues(track.getStartTime() + deltaTime, track.getEndTime())
-        track.setStartTime(track.getStartTime() + deltaTime)
+        activeTrack.setCues(
+          activeTrack.getStartTime() + deltaTime,
+          activeTrack.getEndTime()
+        )
+        activeTrack.setStartTime(activeTrack.getStartTime() + deltaTime)
+        this.tracks.forEach(track => {
+          if (isActiveTrackBefore(activeTrack, track)) {
+            track.trim(track.getStartTime(), activeTrack.getStartTime())
+          }
+          track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
+        })
+        // activeTrack.setStartTime(activeTrack.getStartTime() + deltaTime)
       } else if (movingRight(deltaTime)) {
         console.log("moving right")
-        track.trim(track.getStartTime() + deltaTime, track.getEndTime())
+        activeTrack.trim(
+          activeTrack.getStartTime() + deltaTime,
+          activeTrack.getEndTime()
+        )
         // track.setStartTime(track.getStartTime() + deltaTime)
       }
-      track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
+      activeTrack.calculatePeaks(this.samplesPerPixel, this.sampleRate)
       this.adjustDuration()
       this.drawRequest()
     })

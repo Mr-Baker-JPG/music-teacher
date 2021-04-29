@@ -94,7 +94,7 @@ export default function Home() {
         setPlayer(ee)
         ee.on("select", updateSelect)
 
-        ee.on("shift", shift(playlist))
+        // ee.on("shift", shift(playlist))
 
         document.addEventListener("keyup", e => {
           if (e.key === "x") {
@@ -105,10 +105,12 @@ export default function Home() {
   }, [waveFormRef])
 
   const isActiveInFront = (activeTrack, track) =>
-    activeTrack.getStartTime() > track.getStartTime()
+    activeTrack.getStartTime() > track.getStartTime() &&
+    track.getStartTime() !== track.getEndTime()
 
   const isActiveInBack = (activeTrack, track) =>
-    activeTrack.getStartTime() < track.getStartTime()
+    activeTrack.getStartTime() < track.getStartTime() &&
+    track.getStartTime() !== track.getEndTime()
 
   const movingRight = deltaTime => deltaTime > 0
   const movingLeft = deltaTime => deltaTime < 0
