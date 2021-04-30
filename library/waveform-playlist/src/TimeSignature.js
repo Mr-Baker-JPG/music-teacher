@@ -51,7 +51,7 @@ class TimeSignature {
         marker: 0,
         bigStep: this.beatsPerMeasure * bpmToMsPerBeat(this.bpm),
         smallStep: bpmToMsPerBeat(this.bpm),
-        secondStep: 1 / 2,
+        secondStep: bpmToMsPerBeat(this.bpm) / this.beatsPerMeasure / 1000, // 1 / 2,
       },
       2500: {
         marker: 0,

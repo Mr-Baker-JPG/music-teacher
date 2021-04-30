@@ -20,7 +20,7 @@ function WavePlayer({ setEmitter }) {
       isContinuousPlay: true,
       showTimeSignature: true,
       timeSignature: {
-        bpm: 90,
+        bpm: 60,
         beatsPerMeasure: 4,
         noteValue: 4,
       },
