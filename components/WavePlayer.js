@@ -32,7 +32,6 @@ function WavePlayer({ setEmitter }) {
       },
       controls: {
         show: false, //whether or not to include the track controls
-        width: 200, //width of controls in pixels
       },
     })
 
@@ -45,10 +44,7 @@ function WavePlayer({ setEmitter }) {
       ])
       .then(function () {
         // setPlaylist(playlist)
-
-        console.log("LOADED", playlist)
         // ee.on("select", updateSelect)
-
         // ee.on("shift", shift(playlist))
       })
 
@@ -59,8 +55,6 @@ function WavePlayer({ setEmitter }) {
     })
     const ee = playlist.getEventEmitter()
     setEmitter(ee)
-
-    ee.on("audiosourcesloaded", () => console.log("rendered"))
   }, [waveFormRef])
 
   const copyActiveTrack = async playlist => {

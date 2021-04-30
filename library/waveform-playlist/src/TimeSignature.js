@@ -24,10 +24,6 @@ class TimeSignature {
     this.marginLeft = marginLeft
     this.colors = colors
 
-    console.log({
-      bigStep: this.beatsPerMeasure * bpmToMsPerBeat(this.bpm),
-      smallStep: bpmToMsPerBeat(this.bpm),
-    })
     this.timeinfo = {
       20000: {
         marker: 0,
