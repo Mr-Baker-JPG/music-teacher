@@ -585,7 +585,7 @@ export default class {
             attributes: {
               width: currentWidth * scale,
               height: data.height * scale,
-              style: `float: left; position: relative; margin: 0; padding: 0; z-index: 3; width: ${currentWidth}px; height: ${data.height}px;`,
+              style: `border-right: 1px solid #919191; border-left: 1px solid #919191;float: left; position: relative; margin: 0; padding: 0; z-index: 3; width: ${currentWidth}px; height: ${data.height}px;`,
             },
             hook: new CanvasHook(
               peaks,
