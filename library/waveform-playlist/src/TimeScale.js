@@ -132,7 +132,7 @@ class TimeScale {
             )
           )
 
-          canvasInfo[pix] = 0
+          canvasInfo[pix] = 10
         } else if (scaleInfo.bigStep && counter % scaleInfo.bigStep === 0) {
           canvasInfo[pix] = 5
         } else if (scaleInfo.smallStep && counter % scaleInfo.smallStep === 0) {

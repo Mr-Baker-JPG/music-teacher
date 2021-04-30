@@ -12,7 +12,7 @@ export default class {
   }
 
   emitShift(x) {
-    const deltaX = x - this.prevX
+    const deltaX = Number(x) - Number(this.prevX)
     const deltaTime = pixelsToSeconds(
       deltaX,
       this.samplesPerPixel,
@@ -23,7 +23,7 @@ export default class {
   }
 
   complete(x) {
-    this.emitShift(x)
+    // this.emitShift(x)
     this.active = false
   }
 

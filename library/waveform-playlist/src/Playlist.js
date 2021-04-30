@@ -1,4 +1,5 @@
 import _defaults from "lodash.defaultsdeep"
+import _ from "lodash"
 
 import h from "virtual-dom/h"
 import diff from "virtual-dom/diff"
@@ -9,6 +10,7 @@ import { pixelsToSeconds } from "./utils/conversions"
 import LoaderFactory from "./track/loader/LoaderFactory"
 import ScrollHook from "./render/ScrollHook"
 import TimeScale from "./TimeScale"
+import TimeSignature from "./TimeSignature"
 import Track from "./Track"
 import Playout from "./Playout"
 import AnnotationList from "./annotation/AnnotationList"
@@ -47,6 +49,8 @@ export default class {
     this.scrollLeft = 0
     this.scrollTimer = undefined
     this.showTimescale = false
+    this.showTimeSignature = false
+    this.timeSignature = { bpm: 60, beatsPerMeasure: 4, noteValue: 4 }
     // whether a user is scrolling the waveform
     this.isScrolling = false
 
@@ -125,6 +129,14 @@ export default class {
 
   setShowTimeScale(show) {
     this.showTimescale = show
+  }
+
+  setShowTimeSignature(show) {
+    this.showTimeSignature = show
+  }
+
+  setTimeSignature(signature) {
+    this.timeSignature = signature
   }
 
   setMono(mono) {
@@ -227,31 +239,36 @@ export default class {
     })
 
     ee.on("shift", (deltaTime, activeTrack) => {
+      if (activeTrack.getStartTime() < 0) {
+        activeTrack.setStartTime(0)
+        return true
+      }
+
       activeTrack.setStartTime(activeTrack.getStartTime() + deltaTime)
-      // this.adjustDuration()
-      // this.drawRequest()
+
       this.tracks.forEach(track => {
         const endTime = track.getEndTime()
         const startTime = track.getStartTime()
         if (track.name !== activeTrack.name) {
           if (movingLeft(deltaTime)) {
-            if (isActiveInBack(activeTrack, track)) {
+            if (isActiveInFront(activeTrack, track)) {
+              track.trim(startTime, activeTrack.getStartTime())
+            } else if (isActiveInBack(activeTrack, track)) {
               // track.setCues(activeTrack.getEndTime(), endTime)
               // track.setStartTime(activeTrack.getEndTime())
-            } else if (isActiveInFront(activeTrack, track)) {
-              track.trim(startTime, activeTrack.getStartTime())
             }
           } else if (movingRight(deltaTime)) {
-            if (isActiveInFront(activeTrack, track)) {
-              // track.setCues(startTime, activeTrack.getStartTime())
-            } else if (isActiveInBack(activeTrack, track)) {
+            if (isActiveInBack(activeTrack, track)) {
               track.trim(activeTrack.getEndTime(), endTime)
+            } else if (isActiveInFront(activeTrack, track)) {
+              // track.setCues(startTime, activeTrack.getStartTime())
             }
           }
           track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
         }
       })
       this.adjustDuration()
+      // if (+new Date() % 100 > 5) {
       this.drawRequest()
     })
 
@@ -259,13 +276,11 @@ export default class {
     ee.on("resizeright", (deltaTime, activeTrack) => {
       if (deltaTime === 0) return
       if (movingLeft(deltaTime)) {
-        console.log("moving left")
         activeTrack.trim(
           activeTrack.getStartTime(),
           activeTrack.getEndTime() + deltaTime
         )
       } else if (movingRight(deltaTime)) {
-        console.log("moving right")
         activeTrack.setCues(
           activeTrack.getStartTime(),
           activeTrack.getEndTime() + deltaTime
@@ -285,11 +300,15 @@ export default class {
       this.drawRequest()
     })
 
-    // TODO: Caleb get this logic to work!
+    // TODO: BUG HERE
     ee.on("resizeleft", (deltaTime, activeTrack) => {
       if (deltaTime === 0) return
+      if (activeTrack.getStartTime() < 0) {
+        activeTrack.setCues(0, activeTrack.getEndTime())
+        activeTrack.setStartTime(0)
+        return true
+      }
       if (movingLeft(deltaTime)) {
-        console.log("moving left")
         activeTrack.setCues(
           activeTrack.getStartTime() + deltaTime,
           activeTrack.getEndTime()
@@ -303,7 +322,6 @@ export default class {
         })
         // activeTrack.setStartTime(activeTrack.getStartTime() + deltaTime)
       } else if (movingRight(deltaTime)) {
-        console.log("moving right")
         activeTrack.trim(
           activeTrack.getStartTime() + deltaTime,
           activeTrack.getEndTime()
@@ -996,11 +1014,11 @@ export default class {
     this.tree = newTree
 
     // use for fast forwarding.
-    this.viewDuration = pixelsToSeconds(
-      this.rootNode.clientWidth - this.controls.width,
-      this.samplesPerPixel,
-      this.sampleRate
-    )
+    // this.viewDuration = pixelsToSeconds(
+    //   this.rootNode.clientWidth - this.controls.width,
+    //   this.samplesPerPixel,
+    //   this.sampleRate
+    // )
   }
 
   getTrackRenderData(data = {}) {
@@ -1014,6 +1032,7 @@ export default class {
       playlistLength: this.duration,
       playbackSeconds: this.playbackSeconds,
       colors: this.colors,
+      isLast: false,
     }
 
     return _defaults({}, data, defaults)
@@ -1029,8 +1048,27 @@ export default class {
     return true
   }
 
+  isLastTrack(track) {
+    return this.tracks[this.tracks.length - 1].name === track.name
+  }
+
   renderAnnotations() {
     return this.annotationList.render()
+  }
+
+  renderTimeSignature() {
+    const controlWidth = this.controls.show ? this.controls.width : 0
+    const timeSignature = new TimeSignature(
+      this.timeSignature,
+      this.duration,
+      this.scrollLeft,
+      this.samplesPerPixel,
+      this.sampleRate,
+      controlWidth,
+      this.colors
+    )
+
+    return timeSignature.render()
   }
 
   renderTimeScale() {
@@ -1053,6 +1091,7 @@ export default class {
       return track.render(
         this.getTrackRenderData({
           isActive: this.isActiveTrack(track),
+          isLastTrack: this.isLastTrack(track),
           shouldPlay: this.shouldTrackPlay(track),
           soloed: this.soloedTracks.indexOf(track) > -1,
           muted: this.mutedTracks.indexOf(track) > -1,
@@ -1066,7 +1105,7 @@ export default class {
       "div.playlist-tracks",
       {
         attributes: {
-          style: "overflow: auto;",
+          style: "overflow: auto;position: relative;",
         },
         onscroll: e => {
           this.scrollLeft = pixelsToSeconds(
@@ -1088,6 +1127,10 @@ export default class {
 
     if (this.showTimescale) {
       containerChildren.push(this.renderTimeScale())
+    }
+
+    if (this.showTimeSignature) {
+      containerChildren.push(this.renderTimeSignature())
     }
 
     containerChildren.push(this.renderTrackSection())

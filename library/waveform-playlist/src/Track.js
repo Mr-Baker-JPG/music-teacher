@@ -350,10 +350,31 @@ export default class {
       data.resolution,
       data.sampleRate
     )
+    // const channelPixels = secondsToPixels(
+    //   this.getEndTime() - this.getStartTime(),
+    //   data.resolution,
+    //   data.sampleRate
+    // )
+    const leftPixels = secondsToPixels(
+      this.getStartTime(),
+      data.resolution,
+      data.sampleRate
+    )
+    const startX = secondsToPixels(
+      this.startTime,
+      data.resolution,
+      data.sampleRate
+    )
+    const width = this.peaks.length
 
+    // console.log(
+    //   `left: ${startX}px`,
+    //   `${document.getElementsByClassName("playlist-overlay")[0]?.style.left} `
+    // )
     const config = {
       attributes: {
         style: `position: absolute; top: 0; right: 0; bottom: 0; left: 0; width: ${channelPixels}px; z-index: 9;`,
+        // style: `position: absolute; z-index: 9; width:100%; height:100%; overflow-y: hidden;`,
       },
     }
 
@@ -654,6 +675,12 @@ export default class {
         `div.channel.channel-${channelNum}`,
         {
           attributes: {
+            // style: `height: ${data.height}px; width: 100%; top: ${
+            //   channelNum * data.height
+            // }px; position: absolute; margin: 0; padding: 0; z-index: 1; overflow-y: hidden;`,
+            // style: `height: ${data.height}px; width: ${width}px; top: ${
+            //   channelNum * data.height
+            // }px; left: ${startX}px; position: absolute; margin: 0; padding: 0; z-index: 1;`,
             style: `height: ${data.height}px; width: ${width}px; top: ${
               channelNum * data.height
             }px; left: ${startX}px; position: absolute; margin: 0; padding: 0; z-index: 1;`,
@@ -721,6 +748,14 @@ export default class {
           style: `margin-left: ${channelMargin}px; height: ${
             data.height * numChan
           }px;`,
+          // style: `margin-left: ${startX}px; position: absolute; width: ${width}px; overflow-y: hidden;`,
+          // style: `${
+          //   data.isLastTrack
+          //     ? `margin-left: ${startX}px;`
+          //     : `left: ${startX}px;`
+          // } height: ${data.height * numChan}px;width: ${width}px;position: ${
+          //   data.isLastTrack ? "initial" : "absolute"
+          // }`,
         },
       },
       channelChildren
