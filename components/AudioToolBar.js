@@ -120,6 +120,14 @@ const AudioToolBar = ({ emitter }) => {
             icon={faArrowRight}
           />
         </ButtonGroup>
+
+        <ButtonGroup>
+          <Button
+            title="Reset"
+            className="btn-outline-primary"
+            onClick={() => emitter.emit("resettracks")}
+          />
+        </ButtonGroup>
       </div>
     </div>
   )

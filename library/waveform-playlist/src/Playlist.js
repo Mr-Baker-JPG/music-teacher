@@ -273,6 +273,11 @@ export default class {
       this.drawRequest()
     })
 
+    ee.on("resettracks", () => {
+      window.localStorage.removeItem("musicPlayer")
+      window.location.reload()
+    })
+
     ee.on("shift", (deltaTime, activeTrack) => {
       if (activeTrack.getStartTime() < 0) {
         activeTrack.setStartTime(0)
