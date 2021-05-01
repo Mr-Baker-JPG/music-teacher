@@ -19,6 +19,7 @@ function WavePlayer({ setEmitter, tracks }) {
         container: waveFormNode,
         state: "cursor",
         isContinuousPlay: true,
+        isAutomaticScroll: true,
         showTimeSignature: true,
         timeSignature: {
           bpm: 60,
