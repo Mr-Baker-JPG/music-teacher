@@ -2,6 +2,7 @@ import * as React from "react"
 import _ from "lodash"
 import WaveformPlaylist from "../library/waveform-playlist/src/app"
 import loadLocalStorageAudioTracks from "../library/utils/localStorageAudioTracks"
+import keyboardShortCut from "../library/utils/keyboardShortcut"
 
 function WavePlayer({ setEmitter, tracks }) {
   const waveFormRef = React.useRef(null)
@@ -36,15 +37,11 @@ function WavePlayer({ setEmitter, tracks }) {
       })
 
       await loadLocalStorageAudioTracks(playlist, tracks)
-
       const ee = playlist.getEventEmitter()
       setEmitter(ee)
 
-      document.addEventListener("keyup", e => {
-        if (e.key === "x") {
-          ee.emit("cutchannel")
-        }
-      })
+      const keyShortCutGenerator = keyboardShortCut(ee)
+      keyShortCutGenerator("x", "cutchannel")
     }
     init()
   }, [waveFormRef])
