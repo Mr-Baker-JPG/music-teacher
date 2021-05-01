@@ -1,5 +1,7 @@
 import _defaults from "lodash.defaultsdeep"
 import _ from "lodash"
+import cycle from "../../utils/cycle"
+cycle()
 
 import h from "virtual-dom/h"
 import diff from "virtual-dom/diff"
@@ -34,6 +36,18 @@ const isActiveTrackBefore = (activeTrack, track) =>
 
 const isActiveInBack = (activeTrack, track) =>
   activeTrack.getStartTime() <= track.getStartTime()
+
+const copyActiveTrack = async playlist => {
+  const activeTrack = playlist.getActiveTrack()
+  const newName = `${activeTrack.name}_copy_${Math.floor(Math.random() * 100)}`
+  await playlist.load([
+    {
+      src: activeTrack.src,
+      name: newName,
+    },
+  ])
+  return playlist.tracks.filter(track => track.name === newName)[0]
+}
 
 export default class {
   constructor() {
@@ -235,6 +249,27 @@ export default class {
 
     ee.on("statechange", state => {
       this.setState(state)
+      this.drawRequest()
+    })
+
+    ee.on("cutchannel", async () => {
+      const activeTrack = this.getActiveTrack()
+      if (!activeTrack) {
+        return false
+      }
+
+      const newClip = await copyActiveTrack(this)
+      const cursor = this.cursor
+
+      // cut the newClip
+      newClip.trim(cursor, activeTrack.cueOut)
+      newClip.calculatePeaks(this.samplesPerPixel, this.sampleRate)
+
+      // cutting the initial clip
+      activeTrack.trim(0, cursor)
+      activeTrack.calculatePeaks(this.samplesPerPixel, this.sampleRate)
+
+      this.setTimeSelection(0, 0)
       this.drawRequest()
     })
 
@@ -1006,6 +1041,10 @@ export default class {
     window.requestAnimationFrame(() => {
       this.draw(this.render())
     })
+    window.localStorage.setItem(
+      "musicPlayer",
+      JSON.stringify(JSON.decycle(this))
+    )
   }
 
   draw(newTree) {

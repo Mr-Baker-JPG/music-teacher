@@ -1,7 +1,8 @@
 TODOS:
 
-- Time Scale
-  - Change BPM based on Setting
+_- Time Scale
+_- Change BPM based on Setting
+
 - Store in local storage
 - Looping functionality
 - Button for visually putting on one line (not for moving)

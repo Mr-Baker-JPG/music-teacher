@@ -26,6 +26,13 @@ const STATE_FADEOUT = "STATE_FADEOUT"
 const STATE_RESIZE_LEFT = "STATE_RESIZE_LEFT"
 const STATE_RESIZE_RIGHT = "STATE_RESIZE_RIGHT"
 
+const tracks = [
+  {
+    src: "media/_Miles_1.mp3",
+    name: "Vocals",
+  },
+]
+
 export default function Home() {
   const [emitter, setEmitter] = React.useState(null)
   const [isPlaying, setIsPlaying] = React.useState(false)
@@ -165,7 +172,7 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            <WavePlayer setEmitter={setEmitter} />
+            <WavePlayer setEmitter={setEmitter} tracks={tracks} />
           </div>
         </article>
       </div>
