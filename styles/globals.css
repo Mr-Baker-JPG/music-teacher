@@ -6,9 +6,11 @@
 
 .playing.channel-wrapper:first-child {
   position: absolute;
+  display: inline-block;
 }
-playing.channel-wrapper {
+.playing.channel-wrapper {
   position: inherit;
+  display: inline-block;
 }
 
 .hidden {

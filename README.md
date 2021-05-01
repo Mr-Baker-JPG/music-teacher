@@ -2,9 +2,9 @@ TODOS:
 
 _- Time Scale
 _- Change BPM based on Setting
-\_- Store in local storage
+_- Store in local storage
+_- Looping functionality
 
-- Looping functionality
 - Button for visually putting on one line (not for moving)
 - color segments of the audio canvas and identified
 

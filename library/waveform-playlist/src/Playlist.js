@@ -313,7 +313,23 @@ export default class {
       this.drawRequest()
     })
 
-    // TODO: Caleb get this logic to work!
+    ee.on("splitchannels", () => {
+      const channels = document.querySelectorAll(".channel-wrapper")
+      console.log("SPLITTING", channels)
+
+      Array.from(channels).forEach(c => {
+        c.classList.remove("playing")
+      })
+    })
+
+    ee.on("mergechannels", () => {
+      const channels = document.querySelectorAll(".channel-wrapper")
+      console.log("MERGING", channels)
+      Array.from(channels).forEach(c => {
+        c.classList.add("playing")
+      })
+    })
+
     ee.on("resizeright", (deltaTime, activeTrack) => {
       if (deltaTime === 0) return
       if (movingLeft(deltaTime)) {

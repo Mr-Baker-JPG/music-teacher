@@ -34,6 +34,7 @@ const AudioToolBar = ({ emitter }) => {
           <Button
             title="Pause"
             onClick={() => {
+              emitter.emit("splitchannels")
               emitter.emit("pause")
               setIsPlaying(false)
             }}
@@ -47,6 +48,7 @@ const AudioToolBar = ({ emitter }) => {
             }`}
             icon={faPlay}
             onClick={() => {
+              emitter.emit("mergechannels")
               emitter.emit("play")
               setIsPlaying(true)
             }}
@@ -56,6 +58,7 @@ const AudioToolBar = ({ emitter }) => {
             icon={faStop}
             className="btn-outline-danger"
             onClick={() => {
+              emitter.emit("splitchannels")
               emitter.emit("stop")
               setIsPlaying(false)
             }}
@@ -69,6 +72,7 @@ const AudioToolBar = ({ emitter }) => {
               stateButton === STATE_CURSOR && "active"
             }`}
             onClick={e => {
+              emitter.emit("splitchannels")
               emitter.emit("statechange", "cursor")
               setStateButton(STATE_CURSOR)
             }}
@@ -80,6 +84,7 @@ const AudioToolBar = ({ emitter }) => {
               stateButton === STATE_SELECT && "active"
             }`}
             onClick={e => {
+              emitter.emit("splitchannels")
               emitter.emit("statechange", "cursor")
               setStateButton(STATE_SELECT)
             }}
@@ -91,6 +96,7 @@ const AudioToolBar = ({ emitter }) => {
               stateButton === STATE_SHIFT && " active"
             }`}
             onClick={e => {
+              emitter.emit("splitchannels")
               emitter.emit("statechange", "shift")
               setStateButton(STATE_SHIFT)
             }}
@@ -103,6 +109,7 @@ const AudioToolBar = ({ emitter }) => {
             }`}
             title="Resize audio clip from the left"
             onClick={e => {
+              emitter.emit("splitchannels")
               emitter.emit("statechange", "resizeleft")
               setStateButton(STATE_RESIZE_LEFT)
             }}
@@ -114,6 +121,7 @@ const AudioToolBar = ({ emitter }) => {
             }`}
             title="Resize audio clip from the right"
             onClick={e => {
+              emitter.emit("splitchannels")
               emitter.emit("statechange", "resizeright")
               setStateButton(STATE_RESIZE_RIGHT)
             }}
