@@ -108,6 +108,7 @@ export default class {
       shift: true,
       resizeright: true,
       resizeleft: true,
+      deletetrack: true,
     }
 
     this.enabledStates = _assign({}, defaultStatesEnabled, enabledStates)
@@ -251,6 +252,8 @@ export default class {
     let duration
     let when = now
     let segment = endTime ? endTime - startTime : undefined
+
+    startTime = Object.is(startTime) ? startTime.startTime : startTime
 
     const defaultOptions = {
       shouldPlay: true,

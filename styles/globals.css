@@ -4,6 +4,10 @@
   /* background-color: rgba(255, 0, 0, 0.3); */
 }
 
+.to-delete canvas {
+  background: rgba(255, 0, 0, 0.3);
+}
+
 .playing.channel-wrapper:first-child {
   position: absolute;
   display: inline-block;

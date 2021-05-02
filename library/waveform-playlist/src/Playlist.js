@@ -323,11 +323,19 @@ export default class {
     })
 
     ee.on("mergechannels", () => {
-      const channels = document.querySelectorAll(".channel-wrapper")
+      const channels = Array.from(document.querySelectorAll(".channel-wrapper"))
       console.log("MERGING", channels)
-      Array.from(channels).forEach(c => {
-        c.classList.add("playing")
-      })
+      if (channels.length > 1) {
+        channels.forEach(c => {
+          c.classList.add("playing")
+        })
+      }
+    })
+
+    ee.on("applyclass", (start, end, track) => {
+      if (!this.isPlaying()) {
+        this.drawRequest()
+      }
     })
 
     ee.on("resizeright", (deltaTime, activeTrack) => {
@@ -433,9 +441,12 @@ export default class {
     })
 
     ee.on("removeTrack", track => {
-      this.removeTrack(track)
-      this.adjustTrackPlayout()
-      this.drawRequest()
+      if (!this.isPlaying()) {
+        this.removeTrack(track)
+        this.rewind()
+        this.adjustTrackPlayout()
+        this.drawRequest()
+      }
     })
 
     ee.on("changeTrackView", (track, opts) => {
@@ -878,7 +889,7 @@ export default class {
     const selected = this.getTimeSelection()
     const playoutPromises = []
 
-    const start = startTime || this.pausedAt || this.cursor
+    let start = startTime || this.pausedAt || this.cursor
     let end = endTime
 
     if (!end && selected.end !== selected.start && selected.end > start) {

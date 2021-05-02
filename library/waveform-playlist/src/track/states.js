@@ -5,6 +5,7 @@ import fadein from "./states/FadeInState"
 import fadeout from "./states/FadeOutState"
 import resizeleft from "./states/ResizeLeftState"
 import resizeright from "./states/ResizeRightState"
+import deletetrack from "./states/DeleteState"
 
 export default {
   cursor,
@@ -14,4 +15,5 @@ export default {
   fadeout,
   resizeleft,
   resizeright,
+  deletetrack,
 }

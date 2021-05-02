@@ -10,6 +10,7 @@ import {
   faPlay,
   faRedo,
   faStop,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons"
 
 import ButtonGroup from "./ButtonGroup"
@@ -22,6 +23,7 @@ const STATE_FADEIN = "STATE_FADEIN"
 const STATE_FADEOUT = "STATE_FADEOUT"
 const STATE_RESIZE_LEFT = "STATE_RESIZE_LEFT"
 const STATE_RESIZE_RIGHT = "STATE_RESIZE_RIGHT"
+const STATE_DELETE_TRACK = "STATE_DELETE_TRACK"
 
 const AudioToolBar = ({ emitter }) => {
   const [isPlaying, setIsPlaying] = React.useState(false)
@@ -48,6 +50,7 @@ const AudioToolBar = ({ emitter }) => {
             }`}
             icon={faPlay}
             onClick={() => {
+              setStateButton(STATE_CURSOR)
               emitter.emit("mergechannels")
               emitter.emit("play")
               setIsPlaying(true)
@@ -126,6 +129,18 @@ const AudioToolBar = ({ emitter }) => {
               setStateButton(STATE_RESIZE_RIGHT)
             }}
             icon={faArrowRight}
+          />
+          <Button
+            title="Delete clip"
+            className={`btn-outline-danger ${
+              stateButton === STATE_DELETE_TRACK && "active"
+            }`}
+            icon={faTrash}
+            onClick={() => {
+              emitter.emit("splitchannels")
+              emitter.emit("statechange", "deletetrack")
+              setStateButton(STATE_DELETE_TRACK)
+            }}
           />
         </ButtonGroup>
 
