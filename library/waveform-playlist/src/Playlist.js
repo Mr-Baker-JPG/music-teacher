@@ -1055,7 +1055,7 @@ export default class {
         (this.isSegmentSelection() ? selection.end : this.duration)
       ) {
         this.ee.emit("finished")
-        this.cursor = 0
+        // this.cursor = 0
         this.ee.emit("rewind")
         this.ee.emit("play")
       }

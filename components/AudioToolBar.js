@@ -88,7 +88,7 @@ const AudioToolBar = ({ emitter }) => {
             }`}
             onClick={e => {
               emitter.emit("splitchannels")
-              emitter.emit("statechange", "cursor")
+              emitter.emit("statechange", "select")
               setStateButton(STATE_SELECT)
             }}
             icon={faItalic}
