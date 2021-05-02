@@ -2,6 +2,7 @@ import _defaults from "lodash.defaultsdeep"
 import _ from "lodash"
 import cycle from "../../utils/cycle"
 cycle()
+import * as localForage from "localforage"
 
 import h from "virtual-dom/h"
 import diff from "virtual-dom/diff"
@@ -222,6 +223,19 @@ export default class {
   setUpEventEmitter() {
     const ee = this.ee
 
+    ee.on("audiorenderingfinished", async (type, data) => {
+      if (type == "wav") {
+        await localForage.setItem("musicPlayer::BUFFER", data)
+        this.tracks = this.collapsedTracks
+        this.load([
+          {
+            src: data,
+            name: "Vocals",
+          },
+        ])
+      }
+    })
+
     ee.on("automaticscroll", val => {
       this.isAutomaticScroll = val
     })
@@ -269,7 +283,6 @@ export default class {
       // cutting the initial clip
       activeTrack.trim(0, cursor)
       activeTrack.calculatePeaks(this.samplesPerPixel, this.sampleRate)
-
       this.setTimeSelection(0, 0)
       this.drawRequest()
     })
@@ -315,7 +328,6 @@ export default class {
 
     ee.on("splitchannels", () => {
       const channels = document.querySelectorAll(".channel-wrapper")
-      console.log("SPLITTING", channels)
 
       Array.from(channels).forEach(c => {
         c.classList.remove("playing")
@@ -324,7 +336,6 @@ export default class {
 
     ee.on("mergechannels", () => {
       const channels = Array.from(document.querySelectorAll(".channel-wrapper"))
-      console.log("MERGING", channels)
       if (channels.length > 1) {
         channels.forEach(c => {
           c.classList.add("playing")
@@ -420,6 +431,16 @@ export default class {
 
     ee.on("fastforward", () => {
       this.fastForward()
+    })
+
+    // TODO: Craig HERE
+    ee.on("finished", function () {
+      if (this.isLooping) {
+        let playoutPromises = this.play(0, 0)
+        playoutPromises.then(function () {
+          playoutPromises = playlist.play(0, 0)
+        })
+      }
     })
 
     ee.on("clear", () => {
@@ -689,6 +710,7 @@ export default class {
           return
         }
 
+        this.initExporter()
         if (type === "wav") {
           this.exportWorker.postMessage({
             command: "init",
@@ -1077,13 +1099,13 @@ export default class {
     window.requestAnimationFrame(() => {
       this.draw(this.render())
     })
+  }
+
+  draw(newTree) {
     window.localStorage.setItem(
       "musicPlayer",
       JSON.stringify(JSON.decycle(this))
     )
-  }
-
-  draw(newTree) {
     const patches = diff(this.tree, newTree)
     this.rootNode = patch(this.rootNode, patches)
     this.tree = newTree

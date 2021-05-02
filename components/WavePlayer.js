@@ -3,8 +3,10 @@ import _ from "lodash"
 import WaveformPlaylist from "../library/waveform-playlist/src/app"
 import loadLocalStorageAudioTracks from "../library/utils/localStorageAudioTracks"
 import keyboardShortCut from "../library/utils/keyboardShortcut"
+import Track from "../library/waveform-playlist/src/Track"
+import Playout from "../library/waveform-playlist/src/Playout"
 
-function WavePlayer({ setEmitter, tracks }) {
+function WavePlayer({ setEmitter, tracks, shortCuts = [] }) {
   const waveFormRef = React.useRef(null)
 
   React.useEffect(() => {
@@ -42,7 +44,9 @@ function WavePlayer({ setEmitter, tracks }) {
       setEmitter(ee)
 
       const keyShortCutGenerator = keyboardShortCut(ee)
-      keyShortCutGenerator("x", "cutchannel")
+      shortCuts.forEach(({ key, command, opts = [] }) => {
+        keyShortCutGenerator(key, command, ...opts)
+      })
     }
     init()
   }, [waveFormRef])

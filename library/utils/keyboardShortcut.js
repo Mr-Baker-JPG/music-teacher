@@ -1,7 +1,7 @@
-const keyboardShortCut = emitter => (key, action) => {
+const keyboardShortCut = emitter => (key, action, opts) => {
   document.addEventListener("keyup", e => {
     if (e.key === key) {
-      emitter.emit(action)
+      emitter.emit(action, opts)
     }
   })
 }

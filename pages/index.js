@@ -14,6 +14,12 @@ const tracks = [
   },
 ]
 
+const shortCuts = [
+  { key: "x", command: "cutchannel" },
+  { key: "c", command: "trim" },
+  { key: "m", command: "startaudiorendering", opts: ["wav"] },
+]
+
 export default function Home() {
   const [emitter, setEmitter] = React.useState(null)
 
@@ -29,7 +35,11 @@ export default function Home() {
           </header>
           <div className="post-content">
             <AudioToolBar emitter={emitter} />
-            <WavePlayer setEmitter={setEmitter} tracks={tracks} />
+            <WavePlayer
+              setEmitter={setEmitter}
+              tracks={tracks}
+              shortCuts={shortCuts}
+            />
           </div>
         </article>
       </div>
