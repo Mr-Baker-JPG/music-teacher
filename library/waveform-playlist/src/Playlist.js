@@ -583,6 +583,7 @@ export default class {
 
         const tracks = audioBuffers.map((audioBuffer, index) => {
           const info = trackList[index]
+          const selections = info.selections || []
           const name = info.name || "Untitled"
           const start = info.start || 0
           const states = info.states || {}
@@ -611,6 +612,10 @@ export default class {
           track.setCues(cueIn, cueOut)
           track.setCustomClass(customClass)
           track.setWaveOutlineColor(waveOutlineColor)
+          console.log(selections)
+          selections.forEach(s => {
+            track.addSelection(s.timeSelection, s.name)
+          })
 
           if (fadeIn !== undefined) {
             track.setFadeIn(fadeIn.duration, fadeIn.shape)
@@ -653,6 +658,7 @@ export default class {
         this.tracks = this.tracks.concat(tracks)
         this.adjustDuration()
         this.draw(this.render())
+        console.log(this.tracks)
 
         this.ee.emit("audiosourcesrendered")
       })
