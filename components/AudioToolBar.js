@@ -9,6 +9,8 @@ import {
   faPause,
   faPlay,
   faRedo,
+  faSearchMinus,
+  faSearchPlus,
   faStop,
   faTrash,
 } from "@fortawesome/free-solid-svg-icons"
@@ -66,6 +68,25 @@ const AudioToolBar = ({ emitter }) => {
               setIsPlaying(false)
             }}
           />
+        </ButtonGroup>
+
+        <ButtonGroup>
+          <Button 
+          title="Zoom in"
+          onClick={e => {
+            emitter.emit("zoomin")
+
+          }
+          }
+          icon={faSearchPlus}  />
+          <Button 
+          title="Zoom out"
+          onClick={e => {
+            emitter.emit("zoomout")
+
+          }
+          }
+          icon={faSearchMinus}  />
         </ButtonGroup>
 
         <ButtonGroup>

@@ -6,19 +6,28 @@ import styles from "../styles/Home.module.css"
 import WaveformPlaylist from "../library/waveform-playlist/src/app"
 import WavePlayer from "../components/WavePlayer"
 import AudioToolBar from "../components/AudioToolBar"
+import TimeScale from "../library/waveform-playlist/src/TimeScale"
 
 const tracks = [
   {
-    src: "media/reflections.2.wav",
+    src: "media/reflections.2.mp3",
+    zoomLevels: [512],
     name: "Vocals",
-  },
-  {
-    src: "media/_Miles_1.mp3",
-    name: "Track",
+    selections: [
+      {
+        color: "green",
+        name:"I",
+        timeSelection: {
+          start: 1,
+          end: 4,
+        },
+      },
+    ],
   },
 ]
 
 const shortCuts = [
+  { key: "space", command: "play"},
   { key: "x", command: "cutchannel" },
   { key: "c", command: "trim" },
   { key: "m", command: "startaudiorendering", opts: ["wav"] },
@@ -49,6 +58,7 @@ export default function Home() {
           </div>
         </article>
       </div>
+      This
     </main>
   )
 }

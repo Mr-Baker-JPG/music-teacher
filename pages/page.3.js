@@ -9,12 +9,8 @@ import AudioToolBar from "../components/AudioToolBar"
 
 const tracks = [
   {
-    src: "media/reflections.2.wav",
-    name: "Vocals",
-  },
-  {
     src: "media/_Miles_1.mp3",
-    name: "Track",
+    name: "Vocals",
   },
 ]
 
