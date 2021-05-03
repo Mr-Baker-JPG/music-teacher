@@ -35,6 +35,20 @@ export default class {
     this.startTime = 0
     this.endTime = 0
     this.stereoPan = 0
+    this.selections = []
+  }
+
+  addSelection(
+    timeSelection,
+    name = `chord_${Math.round(Math.random() * 1000)}`
+  ) {
+    this.selections.push({ name, timeSelection })
+  }
+
+  removeSelection(name) {
+    this.selections = this.selections.filter(
+      selection => selection.name !== name
+    )
   }
 
   setEventEmitter(ee) {
@@ -576,6 +590,26 @@ export default class {
       let offset = 0
       let totalWidth = width
       const peaks = this.peaks.data[channelNum]
+
+      channelChildren.push(
+        ...this.selections.map(({ name, timeSelection: { start, end } }) => {
+          const left = secondsToPixels(
+            start - this.cueIn,
+            data.resolution,
+            data.sampleRate
+          )
+          const width = secondsToPixels(
+            end - start,
+            data.resolution,
+            data.sampleRate
+          )
+          return h("div.channel-selection", {
+            attributes: {
+              style: `background: #00ff353b; position: absolute; left: ${left}px; width: ${width}px; height: ${data.height}px; z-index: 2;`,
+            },
+          })
+        })
+      )
 
       while (totalWidth > 0) {
         const currentWidth = Math.min(totalWidth, MAX_CANVAS_WIDTH)

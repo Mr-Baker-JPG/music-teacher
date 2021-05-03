@@ -245,6 +245,14 @@ export default class {
       this.drawRequest()
     })
 
+    ee.on("identify", () => {
+      if (!this.isPlaying()) {
+        console.log("IDENTITY", this.activeTrack, this.timeSelection)
+        this.activeTrack?.addSelection(this.timeSelection)
+        console.log(this.activeTrack)
+      }
+    })
+
     ee.on("select", (start, end, track) => {
       if (this.isPlaying()) {
         this.lastSeeked = start

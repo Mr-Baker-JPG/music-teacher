@@ -18,6 +18,7 @@ const shortCuts = [
   { key: "x", command: "cutchannel" },
   { key: "c", command: "trim" },
   { key: "m", command: "startaudiorendering", opts: ["wav"] },
+  { key: "s", command: "identify" },
 ]
 
 export default function Home() {
