@@ -24,7 +24,19 @@ export default async function loadLocalStorageAudioTracks(playlist, tracks) {
         }
       })
     )
-    playlist.load(tracks)
+    await playlist.load(tracks)
+    playlist.tracks.forEach(track => {
+      const oTrack = oldPlayList.tracks.find(
+        oTrack => oTrack.name === track.name
+      )
+      console.log(track.name, oTrack)
+      if (oTrack) {
+        oTrack.selections.forEach(s =>
+          track.addSelection(s.timeSelection, s.name)
+        )
+      }
+    })
+    playlist.drawRequest()
   } else {
     await playlist.load(tracks)
     storage.setItem("musicPlayer", JSON.stringify(JSON.decycle(playlist)))

@@ -38,6 +38,10 @@ export default class {
     this.selections = []
   }
 
+  getSelections() {
+    return this.selections
+  }
+
   addSelection(
     timeSelection,
     name = `chord_${Math.round(Math.random() * 1000)}`
@@ -592,23 +596,31 @@ export default class {
       const peaks = this.peaks.data[channelNum]
 
       channelChildren.push(
-        ...this.selections.map(({ name, timeSelection: { start, end } }) => {
-          const left = secondsToPixels(
-            start - this.cueIn,
-            data.resolution,
-            data.sampleRate
-          )
-          const width = secondsToPixels(
-            end - start,
-            data.resolution,
-            data.sampleRate
-          )
-          return h("div.channel-selection", {
-            attributes: {
-              style: `background: #00ff353b; position: absolute; left: ${left}px; width: ${width}px; height: ${data.height}px; z-index: 2;`,
-            },
-          })
-        })
+        ...this.selections.reduce(
+          (children, { name, timeSelection: { start, end } }) => {
+            if (start - this.cueIn > 0 && this.cueOut - end > 0) {
+              const left = secondsToPixels(
+                start - this.cueIn,
+                data.resolution,
+                data.sampleRate
+              )
+              const width = secondsToPixels(
+                end - start,
+                data.resolution,
+                data.sampleRate
+              )
+              children.push(
+                h("div.channel-selection", {
+                  attributes: {
+                    style: `background: #00ff353b; position: absolute; left: ${left}px; width: ${width}px; height: ${data.height}px; z-index: 2;`,
+                  },
+                })
+              )
+            }
+            return children
+          },
+          []
+        )
       )
 
       while (totalWidth > 0) {

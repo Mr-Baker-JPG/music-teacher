@@ -47,7 +47,11 @@ const copyActiveTrack = async playlist => {
       name: newName,
     },
   ])
-  return playlist.tracks.filter(track => track.name === newName)[0]
+  const copy = playlist.tracks.filter(track => track.name === newName)[0]
+
+  const selections = activeTrack.getSelections()
+  selections.forEach(s => copy.addSelection(s.timeSelection, s.name))
+  return copy
 }
 
 export default class {
@@ -247,9 +251,11 @@ export default class {
 
     ee.on("identify", () => {
       if (!this.isPlaying()) {
-        console.log("IDENTITY", this.activeTrack, this.timeSelection)
         this.activeTrack?.addSelection(this.timeSelection)
-        console.log(this.activeTrack)
+        this.activeTrack?.calculatePeaks(this.samplesPerPixel, this.sampleRate)
+        this.setTimeSelection(0, 0)
+        this.seek(0, 0, this.activeTrack)
+        this.drawRequest()
       }
     })
 
@@ -526,6 +532,7 @@ export default class {
     ee.on("trim", () => {
       const track = this.getActiveTrack()
       const timeSelection = this.getTimeSelection()
+      if (timeSelection.start === timeSelection.end) return false
 
       track.trim(timeSelection.start, timeSelection.end)
       track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
