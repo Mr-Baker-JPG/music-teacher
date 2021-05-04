@@ -4,9 +4,10 @@ _- Time Scale
 _- Change BPM based on Setting
 _- Store in local storage
 _- Looping functionality
-\_- Button for visually putting on one line (not for moving)
+_- Button for visually putting on one line (not for moving)
+_- color segments of the audio canvas and identified
 
-- color segments of the audio canvas and identified
+- Ability to have predefined sections
 
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
