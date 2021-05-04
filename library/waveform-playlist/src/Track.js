@@ -36,6 +36,15 @@ export default class {
     this.endTime = 0
     this.stereoPan = 0
     this.selections = []
+    this.hidden = false
+  }
+
+  setHidden(hidden) {
+    this.hidden = hidden
+  }
+
+  isHidden() {
+    return this.hidden
   }
 
   getSelections() {
@@ -552,6 +561,7 @@ export default class {
   }
 
   render(data) {
+    const _this = this
     const width = this.peaks.length
     const playbackX = secondsToPixels(
       data.playbackSeconds,
@@ -576,6 +586,9 @@ export default class {
       }
     }
 
+    // if (this.hidden) {
+    //   return
+    // }
     const waveformChildren = [
       h("div.cursor", {
         attributes: {
@@ -597,27 +610,39 @@ export default class {
       const peaks = this.peaks.data[channelNum]
 
       channelChildren.push(
-        ...this.selections.reduce(
+        ...data.coloredSelections.reduce(
           (children, { color, name, timeSelection: { start, end } }) => {
+            console.log(
+              "timeselection",
+              start,
+              end,
+              "track",
+              width,
+              _this.startTime,
+              _this.endTime,
+              _this.cueIn,
+              _this.cueOut
+            )
             // if (start - this.cueIn > 0 && this.cueOut - end > 0) {
-            const left = secondsToPixels(
-              start - this.cueIn <= 0 ? this.cueIn : start - this.cueIn,
+            const selectLeft = secondsToPixels(
+              _this.cueIn >= start ? 0 : start - _this.startTime,
               data.resolution,
               data.sampleRate
             )
-            const width = secondsToPixels(
-              end - start > this.cueOut - start
-                ? this.cueOut - start
-                : end - start,
-              data.resolution,
-              data.sampleRate
-            )
+            const selectWidth =
+              secondsToPixels(
+                _this.startTime >= start
+                  ? end - _this.startTime
+                  : _this.endTime - start < end - start
+                  ? _this.endTime - start
+                  : end - start,
+                data.resolution,
+                data.sampleRate
+              ) - 1
             children.push(
               h("div.channel-selection", {
                 attributes: {
-                  style: `background: ${color}; position: absolute; left: ${left}px; width: ${
-                    width - 1
-                  }px; height: ${data.height}px; z-index: 2;`,
+                  style: `background: ${color}; position: absolute; left: ${selectLeft}px; width: ${selectWidth}px; height: ${data.height}px; z-index: 2;`,
                 },
               })
             )
