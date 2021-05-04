@@ -10,6 +10,24 @@ export default class {
     this.sampleRate = sampleRate
   }
 
+  mouseenter(e) {
+    e.preventDefault()
+    console.log("ENTERING", e.offsetX)
+  }
+
+  mousemove(e) {
+    e.preventDefault()
+    console.log("MOVING", e.offsetX)
+    const startX = e.offsetX
+    const startTime = pixelsToSeconds(
+      startX,
+      this.samplesPerPixel,
+      this.sampleRate
+    )
+
+    this.track.ee.emit("select", startTime, startTime, this.track)
+  }
+
   click(e) {
     e.preventDefault()
 
@@ -28,6 +46,6 @@ export default class {
   }
 
   static getEvents() {
-    return ["click"]
+    return ["click", "mouseenter", "mousemove"]
   }
 }

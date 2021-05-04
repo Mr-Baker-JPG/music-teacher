@@ -35,7 +35,7 @@ export default class {
     this.startTime = 0
     this.endTime = 0
     this.stereoPan = 0
-    this.selections = []
+    this.colorSelections = []
     this.hidden = false
   }
 
@@ -47,19 +47,20 @@ export default class {
     return this.hidden
   }
 
-  getSelections() {
-    return this.selections
+  getColorSelections() {
+    return this.colorSelections
   }
 
-  addSelection(
+  addColorSelection(
     timeSelection,
     name = `chord_${Math.round(Math.random() * 1000)}`,
     color = "green"
   ) {
-    this.selections.push({ name, timeSelection, color })
+    this.colorSelections.push({ name, timeSelection, color })
+    console.log(this.selections)
   }
 
-  removeSelection(name) {
+  removeColorSelection(name) {
     this.selections = this.selections.filter(
       selection => selection.name !== name
     )
@@ -610,7 +611,7 @@ export default class {
       const peaks = this.peaks.data[channelNum]
 
       channelChildren.push(
-        ...data.coloredSelections.reduce(
+        ...this.colorSelections.reduce(
           (children, { color, name, timeSelection: { start, end } }) => {
             console.log(
               "timeselection",
@@ -632,10 +633,10 @@ export default class {
             const selectWidth =
               secondsToPixels(
                 _this.startTime >= start
-                  ? end - _this.startTime
+                  ? _this.startTime + end - _this.startTime
                   : _this.endTime - start < end - start
-                  ? _this.endTime - start
-                  : end - start,
+                  ? _this.startTime + _this.endTime - start
+                  : _this.startTime + end - start,
                 data.resolution,
                 data.sampleRate
               ) - 1

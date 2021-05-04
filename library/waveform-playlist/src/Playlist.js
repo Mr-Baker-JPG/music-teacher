@@ -49,8 +49,23 @@ const copyActiveTrack = async playlist => {
   ])
   const copy = playlist.tracks.filter(track => track.name === newName)[0]
 
-  const selections = activeTrack.getSelections()
-  selections.forEach(s => copy.addSelection(s.timeSelection, s.name))
+  const selections = activeTrack.getColorSelections()
+  selections.forEach(s => {
+    console.log(
+      copy.getStartTime(),
+      s.timeSelection.end,
+      copy.getStartTime() > s.timeSelection.end,
+      copy.getEndTime(),
+      s.timeSelection.start,
+      copy.getEndTime() < s.timeSelection.start
+    )
+    if (
+      !(copy.getStartTime() > s.timeSelection.end) &&
+      !(copy.getEndTime() < s.timeSelection.start)
+    ) {
+      copy.addColorSelection(s.timeSelection, s.name, s.color)
+    }
+  })
   return copy
 }
 
@@ -62,7 +77,6 @@ export default class {
     this.collapsedTracks = []
     this.playoutPromises = []
     this.hiddenTracks = []
-    this.coloredSelections = []
 
     this.cursor = 0
     this.playbackSeconds = 0
@@ -147,22 +161,6 @@ export default class {
       this.working = false
       this.drawRequest()
     }
-  }
-
-  setColoredSelections(selections) {
-    this.coloredSelections = selections
-  }
-
-  addColoredSelection(
-    timeSelection,
-    name = `chord_${Math.round(Math.random() * 1000)}`,
-    color = "green"
-  ) {
-    this.coloredSelections.push({ name, timeSelection, color })
-  }
-
-  getColoredSelections() {
-    return this.coloredSelections
   }
 
   setShowTimeScale(show) {
@@ -273,8 +271,8 @@ export default class {
 
     ee.on("identify", () => {
       if (!this.isPlaying()) {
-        this.addColoredSelection(this.timeSelection)
-        // this.activeTrack?.addSelection(this.timeSelection)
+        // this.addColoredSelection(this.timeSelection)
+        this.activeTrack?.addColorSelection(this.timeSelection)
         this.tracks.forEach(t =>
           t.calculatePeaks(this.samplesPerPixel, this.sampleRate)
         )
@@ -288,7 +286,7 @@ export default class {
       if (this.isPlaying()) {
         this.lastSeeked = start
         this.pausedAt = undefined
-        this.restartPlayFrom(start)
+        // this.restartPlayFrom(0)
       } else {
         // reset if it was paused.
         this.seek(start, end, track)
@@ -615,7 +613,7 @@ export default class {
 
         const tracks = audioBuffers.map((audioBuffer, index) => {
           const info = trackList[index]
-          const selections = info.selections || []
+          const colorSelections = info.colorSelections || []
           const name = info.name || "Untitled"
           const start = info.start || 0
           const states = info.states || {}
@@ -647,8 +645,8 @@ export default class {
           track.setWaveOutlineColor(waveOutlineColor)
           track.setHidden(isHidden)
 
-          selections.forEach(s => {
-            track.addSelection(s.timeSelection, s.name)
+          colorSelections.forEach(s => {
+            track.addColorSelection(s.timeSelection, s.name, s.color)
           })
 
           if (fadeIn !== undefined) {
@@ -690,11 +688,6 @@ export default class {
         })
 
         this.tracks = this.tracks.concat(tracks)
-        // this.tracks = this.tracks.concat(tracks).filter(t => !t.isHidden())
-        // this.hiddenTracks = this.hiddenTracks.concat(tracks).filter(t => {
-        //   console.log(t)
-        //   return t.isHidden()
-        // })
         this.adjustDuration()
         this.draw(this.render())
 
@@ -1249,7 +1242,6 @@ export default class {
         trackEls.push(
           track.render(
             this.getTrackRenderData({
-              coloredSelections: this.getColoredSelections(),
               isActive: this.isActiveTrack(track),
               isLastTrack: this.isLastTrack(track),
               shouldPlay: this.shouldTrackPlay(track),

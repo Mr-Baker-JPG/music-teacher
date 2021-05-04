@@ -9,6 +9,8 @@ _- color segments of the audio canvas and identified
 
 - Ability to have predefined sections
 
+- Shifting/resize -> have cursor be at end of activetrack
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started

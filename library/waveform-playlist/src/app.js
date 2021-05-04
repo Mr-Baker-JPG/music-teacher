@@ -78,7 +78,6 @@ export function init(options = {}, ee = EventEmitter()) {
   playlist.setColors(config.colors)
   playlist.setZoomLevels(config.zoomLevels)
   playlist.setZoomIndex(zoomIndex)
-  playlist.setColoredSelections(config.selections)
   playlist.setMono(config.mono)
   playlist.setExclSolo(config.exclSolo)
   playlist.setShowTimeScale(config.timescale)

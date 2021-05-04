@@ -32,8 +32,8 @@ export default async function loadLocalStorageAudioTracks(playlist, tracks) {
       )
       // console.log(track.name, oTrack)
       if (oTrack) {
-        oTrack.selections.forEach(s =>
-          track.addSelection(s.timeSelection, s.name)
+        oTrack.colorSelections.forEach(s =>
+          track.addColorSelection(s.timeSelection, s.name, s.color)
         )
       }
     })

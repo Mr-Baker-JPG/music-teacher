@@ -11,6 +11,16 @@ const tracks = [
   {
     src: "media/_Miles_1.mp3",
     name: "Vocals",
+    colorSelections: [
+      {
+        color: "green",
+        name: "Gmaj",
+        timeSelection: {
+          start: 1,
+          end: 4,
+        },
+      },
+    ],
   },
   {
     src: "media/metronome.mp3",
@@ -63,7 +73,6 @@ export default function Home() {
               tracks={tracks}
               shortCuts={shortCuts}
               timeSignature={timeSignature}
-              selections={selections}
             />
           </div>
         </article>
