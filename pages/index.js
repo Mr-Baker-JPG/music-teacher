@@ -11,12 +11,28 @@ const tracks = [
   {
     src: "media/reflections.2.wav",
     name: "Vocals",
+    selections: [
+      {
+        color: "green",
+        name: "Gmaj",
+        timeSelection: {
+          start: 1,
+          end: 4,
+        },
+      },
+    ],
   },
   {
     src: "media/_Miles_1.mp3",
     name: "Track",
   },
 ]
+
+const timeSignature = {
+  bpm: 106,
+  beatsPerMeasure: 4,
+  noteValue: 4,
+}
 
 const shortCuts = [
   { key: "x", command: "cutchannel" },
@@ -45,6 +61,7 @@ export default function Home() {
               setEmitter={setEmitter}
               tracks={tracks}
               shortCuts={shortCuts}
+              timeSignature={timeSignature}
             />
           </div>
         </article>

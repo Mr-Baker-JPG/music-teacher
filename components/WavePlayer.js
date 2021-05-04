@@ -6,7 +6,16 @@ import keyboardShortCut from "../library/utils/keyboardShortcut"
 import Track from "../library/waveform-playlist/src/Track"
 import Playout from "../library/waveform-playlist/src/Playout"
 
-function WavePlayer({ setEmitter, tracks, shortCuts = [] }) {
+function WavePlayer({
+  setEmitter,
+  tracks,
+  shortCuts = [],
+  timeSignature = {
+    bpm: 60,
+    beatsPerMeasure: 4,
+    noteValue: 4,
+  },
+}) {
   const waveFormRef = React.useRef(null)
 
   React.useEffect(() => {
@@ -23,11 +32,7 @@ function WavePlayer({ setEmitter, tracks, shortCuts = [] }) {
         isContinuousPlay: true,
         isAutomaticScroll: true,
         showTimeSignature: true,
-        timeSignature: {
-          bpm: 60,
-          beatsPerMeasure: 4,
-          noteValue: 4,
-        },
+        timeSignature,
         waveOutlineColor: "#E0EFF1",
         colors: {
           waveOutlineColor: "#E0EFF1",

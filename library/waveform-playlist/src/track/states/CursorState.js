@@ -22,6 +22,17 @@ export default class {
 
     this.track.ee.emit("select", startTime, startTime, this.track)
   }
+  onmouseover(e) {
+    console.log("mouseover")
+    e.preventDefault()
+
+    const startX = e.offsetX
+    const startTime = pixelsToSeconds(
+      startX,
+      this.samplesPerPixel,
+      this.sampleRate
+    )
+  }
 
   static getClass() {
     return ".state-cursor"

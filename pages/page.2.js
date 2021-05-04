@@ -9,7 +9,7 @@ import AudioToolBar from "../components/AudioToolBar"
 
 const tracks = [
   {
-    src: "media/_Miles_1.mp3",
+    src: "media/Swing.mp3",
     name: "Vocals",
   },
 ]
@@ -31,7 +31,7 @@ export default function Home() {
           <header className="post-header">
             <h1 className="post-title">Individual Track State</h1>
             <p className="lead">
-              Vocals track can not be shifted in time, only the Drums track.
+              Duke Ellington- It Don't Mean a Thing
             </p>
           </header>
           <div className="post-content">
@@ -45,6 +45,12 @@ export default function Home() {
           </div>
         </article>
       </div>
+      <p>Again, shorten the ends of the chords to match the sample to the desired BPM, but this time without a guide.</p>
+      <br></br>
+      <p>Duke Ellington-"From 1926 until his death in 1974, Duke Ellington was an enduring
+presence on American airwaves, first as a curiosity on local radio, then as
+an exotic attraction on network radio, and finally as a senior statesman
+as part of the sputtering endgame of jazz on American television"</p>
     </main>
   )
 }

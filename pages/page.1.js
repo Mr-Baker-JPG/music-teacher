@@ -10,20 +10,39 @@ import TimeScale from "../library/waveform-playlist/src/TimeScale"
 
 const tracks = [
   {
-    src: "media/reflections.2.mp3",
-    zoomLevels: [512],
+    src: "media/Reflections.3.mp3",
+    zoomLevels: [500, 1000, 3000, 5000],
     name: "Vocals",
-    selections: [
-      {
-        color: "green",
-        name:"I",
-        timeSelection: {
-          start: 1,
-          end: 4,
-        },
-      },
-    ],
+    // selections: [
+    //   {
+    //     color: "green",
+    //     name:"I",
+    //     timeSelection: {
+    //       start: 1,
+    //       end: 4,
+    //     },
+    //   },
+    // ],
   },
+  {
+    src: "media/106.Metro.mp3",
+    zoomLevels: [512],
+    collapse: true,
+    states:{
+      shift: false,
+    },
+    name: "Vocals",
+  },
+  {
+    src: "media/106.Brushes.mp3",
+    zoomLevels: [512],
+    collapse: true,
+    states:{
+      shift: false,
+    },
+    name: "Vocals",
+  }
+  
 ]
 
 const shortCuts = [
@@ -33,6 +52,12 @@ const shortCuts = [
   { key: "m", command: "startaudiorendering", opts: ["wav"] },
   { key: "s", command: "identify" },
 ]
+
+const timeSignature = {
+  bpm: 106,
+  beatsPerMeasure: 4,
+  noteValue: 4,
+}
 
 export default function Home() {
   const [emitter, setEmitter] = React.useState(null)
@@ -44,7 +69,7 @@ export default function Home() {
           <header className="post-header">
             <h1 className="post-title">Individual Track State</h1>
             <p className="lead">
-              Vocals track can not be shifted in time, only the Drums track.
+              Reflections in D- Duke Ellington
             </p>
           </header>
           <div className="post-content">
@@ -54,11 +79,17 @@ export default function Home() {
               setEmitter={setEmitter}
               tracks={tracks}
               shortCuts={shortCuts}
+              timeSignature={timeSignature}
             />
           </div>
         </article>
       </div>
-      This
+      <p>The sample here is at a slower tempo then the metronome. Trim the sample to just the highlighted areas and allign them with the project tempo.</p>
+      <br></br>
+      <p>Duke Ellington-"From 1926 until his death in 1974, Duke Ellington was an enduring
+presence on American airwaves, first as a curiosity on local radio, then as
+an exotic attraction on network radio, and finally as a senior statesman
+as part of the sputtering endgame of jazz on American television"</p>
     </main>
   )
 }

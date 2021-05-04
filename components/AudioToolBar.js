@@ -91,6 +91,25 @@ const AudioToolBar = ({ emitter }) => {
 
         <ButtonGroup>
           <Button
+            title="Zoom in"
+            className={`btn-outline-dark`}
+            onClick={e => {
+              emitter.emit("zoomin")
+            }}
+            icon={faSearchPlus}
+          />
+          <Button
+            title="Zoom out"
+            className={`btn-outline-dark`}
+            onClick={e => {
+              emitter.emit("zoomout")
+            }}
+            icon={faSearchMinus}
+          />
+        </ButtonGroup>
+
+        <ButtonGroup>
+          <Button
             title="Select cursor"
             className={`btn-outline-dark ${
               stateButton === STATE_CURSOR && "active"

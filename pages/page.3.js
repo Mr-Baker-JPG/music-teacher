@@ -9,7 +9,7 @@ import AudioToolBar from "../components/AudioToolBar"
 
 const tracks = [
   {
-    src: "media/_Miles_1.mp3",
+    src: "media/Ella.Piano.mp3",
     name: "Vocals",
   },
 ]
@@ -45,6 +45,9 @@ export default function Home() {
           </div>
         </article>
       </div>
+      <p>The are many chords to choose from. Be creative.</p>
+      <br></br>
+      <p>Ella Fitzgerald and Louis Armstrong- "lorem ipsum"</p>
     </main>
   )
 }

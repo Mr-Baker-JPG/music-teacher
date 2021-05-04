@@ -44,9 +44,10 @@ export default class {
 
   addSelection(
     timeSelection,
-    name = `chord_${Math.round(Math.random() * 1000)}`
+    name = `chord_${Math.round(Math.random() * 1000)}`,
+    color = "green"
   ) {
-    this.selections.push({ name, timeSelection })
+    this.selections.push({ name, timeSelection, color })
   }
 
   removeSelection(name) {
@@ -597,26 +598,30 @@ export default class {
 
       channelChildren.push(
         ...this.selections.reduce(
-          (children, { name, timeSelection: { start, end } }) => {
-            if (start - this.cueIn > 0 && this.cueOut - end > 0) {
-              const left = secondsToPixels(
-                start - this.cueIn,
-                data.resolution,
-                data.sampleRate
-              )
-              const width = secondsToPixels(
-                end - start,
-                data.resolution,
-                data.sampleRate
-              )
-              children.push(
-                h("div.channel-selection", {
-                  attributes: {
-                    style: `background: #00ff353b; position: absolute; left: ${left}px; width: ${width}px; height: ${data.height}px; z-index: 2;`,
-                  },
-                })
-              )
-            }
+          (children, { color, name, timeSelection: { start, end } }) => {
+            // if (start - this.cueIn > 0 && this.cueOut - end > 0) {
+            const left = secondsToPixels(
+              start - this.cueIn <= 0 ? this.cueIn : start - this.cueIn,
+              data.resolution,
+              data.sampleRate
+            )
+            const width = secondsToPixels(
+              end - start > this.cueOut - start
+                ? this.cueOut - start
+                : end - start,
+              data.resolution,
+              data.sampleRate
+            )
+            children.push(
+              h("div.channel-selection", {
+                attributes: {
+                  style: `background: ${color}; position: absolute; left: ${left}px; width: ${
+                    width - 1
+                  }px; height: ${data.height}px; z-index: 2;`,
+                },
+              })
+            )
+            // }
             return children
           },
           []
