@@ -499,6 +499,32 @@ export default class {
       this.drawRequest()
     })
 
+    ee.on("mutebacking", () => {
+      console.log("MUTING")
+      console.log(this.hiddenTracks)
+      this.tracks.forEach(track=>{
+        console.log("muting", track)
+        if(track.hidden && track.name ==="backing"){
+          this.muteTrack(track)
+        }
+      })  
+      this.adjustTrackPlayout()
+      this.drawRequest()
+    })
+
+    ee.on("mutemetro", () => {
+      console.log("MUTING")
+      console.log(this.hiddenTracks)
+      this.tracks.forEach(track=>{
+        console.log("muting", track)
+        if(track.hidden && track.name ==="metronome"){
+          this.muteTrack(track)
+        }
+      })  
+      this.adjustTrackPlayout()
+      this.drawRequest()
+    })
+
     ee.on("mute", track => {
       this.muteTrack(track)
       this.adjustTrackPlayout()

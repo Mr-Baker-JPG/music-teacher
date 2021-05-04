@@ -27,20 +27,20 @@ const tracks = [
   {
     src: "media/106.Metro.mp3",
     zoomLevels: [512],
-    collapse: true,
+    hidden: true,
     states:{
       shift: false,
     },
-    name: "Vocals",
+    name: "metronome",
   },
   {
     src: "media/106.Brushes.mp3",
     zoomLevels: [512],
-    collapse: true,
+    hidden: true,
     states:{
       shift: false,
     },
-    name: "Vocals",
+    name: "backing",
   }
   
 ]

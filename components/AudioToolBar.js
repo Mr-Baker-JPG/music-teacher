@@ -13,6 +13,9 @@ import {
   faSearchPlus,
   faStop,
   faTrash,
+  faVolumeDown,
+  faVolumeMute,
+  faVolumeUp,
 } from "@fortawesome/free-solid-svg-icons"
 
 import ButtonGroup from "./ButtonGroup"
@@ -29,6 +32,8 @@ const STATE_DELETE_TRACK = "STATE_DELETE_TRACK"
 
 const AudioToolBar = ({ emitter }) => {
   const [isPlaying, setIsPlaying] = React.useState(false)
+  const [isMutedMetronome, setIsMutedMetronome] = React.useState(false)
+  const [isMutedBacking, setIsMutedBacking] = React.useState(false)
   const [stateButton, setStateButton] = React.useState(STATE_CURSOR)
 
   return (
@@ -105,6 +110,30 @@ const AudioToolBar = ({ emitter }) => {
               emitter.emit("zoomout")
             }}
             icon={faSearchMinus}
+          />
+        </ButtonGroup>
+
+        <ButtonGroup>
+          <Button
+            title="Backing mute"
+            className={`btn-outline-dark`}
+            onClick={e => {
+              setIsMutedBacking(!isMutedBacking)
+              console.log("mutiung  ")
+              emitter.emit("mutebacking")
+            }}
+            icon={isMutedBacking ? faVolumeUp : faVolumeMute}
+          />
+        </ButtonGroup>
+
+        <ButtonGroup>
+          <Button
+            title={`${isMutedMetronome ? 'Metronome On' : 'Metronome Off'}`}
+            className={`btn-outline-dark`}
+            onClick={e => {
+              setIsMutedMetronome(!isMutedMetronome)
+              emitter.emit("mutemetronome")
+            }}
           />
         </ButtonGroup>
 
