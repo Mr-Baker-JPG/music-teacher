@@ -76,6 +76,33 @@ class TimeSignature {
         // smallStep: 100,
         // secondStep: 1 / 10,
       },
+      500: {
+        marker: 0,
+        bigStep: this.beatsPerMeasure * bpmToMsPerBeat(this.bpm),
+        smallStep: bpmToMsPerBeat(this.bpm),
+        secondStep: bpmToMsPerBeat(this.bpm) / this.beatsPerMeasure / 1000, // 1 / 2,
+        // bigStep: 500,
+        // smallStep: 100,
+        // secondStep: 1 / 10,
+      },
+      300: {
+        marker: 0,
+        bigStep: this.beatsPerMeasure * bpmToMsPerBeat(this.bpm),
+        smallStep: bpmToMsPerBeat(this.bpm),
+        secondStep: bpmToMsPerBeat(this.bpm) / this.beatsPerMeasure / 1000, // 1 / 2,
+        // bigStep: 500,
+        // smallStep: 100,
+        // secondStep: 1 / 10,
+      },
+      100: {
+        marker: 0,
+        bigStep: this.beatsPerMeasure * bpmToMsPerBeat(this.bpm),
+        smallStep: bpmToMsPerBeat(this.bpm),
+        secondStep: bpmToMsPerBeat(this.bpm) / this.beatsPerMeasure / 1000, // 1 / 2,
+        // bigStep: 500,
+        // smallStep: 100,
+        // secondStep: 1 / 10,
+      },
     }
   }
 
