@@ -15,6 +15,7 @@ function WavePlayer({
     beatsPerMeasure: 4,
     noteValue: 4,
   },
+  selections = [],
 }) {
   const waveFormRef = React.useRef(null)
 
@@ -33,6 +34,7 @@ function WavePlayer({
         isAutomaticScroll: true,
         showTimeSignature: true,
         timeSignature,
+        selections,
         waveOutlineColor: "#E0EFF1",
         colors: {
           waveOutlineColor: "#E0EFF1",

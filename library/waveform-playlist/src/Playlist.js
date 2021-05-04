@@ -61,6 +61,8 @@ export default class {
     this.mutedTracks = []
     this.collapsedTracks = []
     this.playoutPromises = []
+    this.hiddenTracks = []
+    this.coloredSelections = []
 
     this.cursor = 0
     this.playbackSeconds = 0
@@ -147,6 +149,22 @@ export default class {
     }
   }
 
+  setColoredSelections(selections) {
+    this.coloredSelections = selections
+  }
+
+  addColoredSelection(
+    timeSelection,
+    name = `chord_${Math.round(Math.random() * 1000)}`,
+    color = "green"
+  ) {
+    this.coloredSelections.push({ name, timeSelection, color })
+  }
+
+  getColoredSelections() {
+    return this.coloredSelections
+  }
+
   setShowTimeScale(show) {
     this.showTimescale = show
   }
@@ -227,6 +245,10 @@ export default class {
   setUpEventEmitter() {
     const ee = this.ee
 
+    ee.on("audiosourcesrendered", t => {
+      console.log(t, this)
+    })
+
     ee.on("audiorenderingfinished", async (type, data) => {
       if (type == "wav") {
         await localForage.setItem("musicPlayer::BUFFER", data)
@@ -251,8 +273,11 @@ export default class {
 
     ee.on("identify", () => {
       if (!this.isPlaying()) {
-        this.activeTrack?.addSelection(this.timeSelection)
-        this.activeTrack?.calculatePeaks(this.samplesPerPixel, this.sampleRate)
+        this.addColoredSelection(this.timeSelection)
+        // this.activeTrack?.addSelection(this.timeSelection)
+        this.tracks.forEach(t =>
+          t.calculatePeaks(this.samplesPerPixel, this.sampleRate)
+        )
         this.setTimeSelection(0, 0)
         this.seek(0, 0, this.activeTrack)
         this.drawRequest()
@@ -283,6 +308,7 @@ export default class {
 
     ee.on("cutchannel", async () => {
       const activeTrack = this.getActiveTrack()
+
       if (!activeTrack) {
         return false
       }
@@ -315,24 +341,26 @@ export default class {
       activeTrack.setStartTime(activeTrack.getStartTime() + deltaTime)
 
       this.tracks.forEach(track => {
-        const endTime = track.getEndTime()
-        const startTime = track.getStartTime()
-        if (track.name !== activeTrack.name) {
-          if (movingLeft(deltaTime)) {
-            if (isActiveInFront(activeTrack, track)) {
-              track.trim(startTime, activeTrack.getStartTime())
-            } else if (isActiveInBack(activeTrack, track)) {
-              // track.setCues(activeTrack.getEndTime(), endTime)
-              // track.setStartTime(activeTrack.getEndTime())
+        if (!track.hidden) {
+          const endTime = track.getEndTime()
+          const startTime = track.getStartTime()
+          if (track.name !== activeTrack.name) {
+            if (movingLeft(deltaTime)) {
+              if (isActiveInFront(activeTrack, track)) {
+                track.trim(startTime, activeTrack.getStartTime())
+              } else if (isActiveInBack(activeTrack, track)) {
+                // track.setCues(activeTrack.getEndTime(), endTime)
+                // track.setStartTime(activeTrack.getEndTime())
+              }
+            } else if (movingRight(deltaTime)) {
+              if (isActiveInBack(activeTrack, track)) {
+                track.trim(activeTrack.getEndTime(), endTime)
+              } else if (isActiveInFront(activeTrack, track)) {
+                // track.setCues(startTime, activeTrack.getStartTime())
+              }
             }
-          } else if (movingRight(deltaTime)) {
-            if (isActiveInBack(activeTrack, track)) {
-              track.trim(activeTrack.getEndTime(), endTime)
-            } else if (isActiveInFront(activeTrack, track)) {
-              // track.setCues(startTime, activeTrack.getStartTime())
-            }
+            track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
           }
-          track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
         }
       })
       this.adjustDuration()
@@ -378,11 +406,13 @@ export default class {
 
         // if overlap resize overlapped clip
         this.tracks.forEach(track => {
-          if (isActiveTrackBehind(activeTrack, track)) {
-            track.setCues(activeTrack.getEndTime(), track.getEndTime())
-            track.setStartTime(activeTrack.getEndTime())
+          if (!track.hidden) {
+            if (isActiveTrackBehind(activeTrack, track)) {
+              track.setCues(activeTrack.getEndTime(), track.getEndTime())
+              track.setStartTime(activeTrack.getEndTime())
+            }
+            track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
           }
-          track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
         })
       }
       activeTrack.calculatePeaks(this.samplesPerPixel, this.sampleRate)
@@ -405,10 +435,12 @@ export default class {
         )
         activeTrack.setStartTime(activeTrack.getStartTime() + deltaTime)
         this.tracks.forEach(track => {
-          if (isActiveTrackBefore(activeTrack, track)) {
-            track.trim(track.getStartTime(), activeTrack.getStartTime())
+          if (!track.hidden) {
+            if (isActiveTrackBefore(activeTrack, track)) {
+              track.trim(track.getStartTime(), activeTrack.getStartTime())
+            }
+            track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
           }
-          track.calculatePeaks(this.samplesPerPixel, this.sampleRate)
         })
         // activeTrack.setStartTime(activeTrack.getStartTime() + deltaTime)
       } else if (movingRight(deltaTime)) {
@@ -599,6 +631,7 @@ export default class {
           const customClass = info.customClass || undefined
           const waveOutlineColor = info.waveOutlineColor || undefined
           const stereoPan = info.stereoPan || 0
+          const isHidden = info.hidden || false
 
           // webaudio specific playout for now.
           const playout = new Playout(this.ac, audioBuffer)
@@ -612,7 +645,8 @@ export default class {
           track.setCues(cueIn, cueOut)
           track.setCustomClass(customClass)
           track.setWaveOutlineColor(waveOutlineColor)
-          console.log(selections)
+          track.setHidden(isHidden)
+
           selections.forEach(s => {
             track.addSelection(s.timeSelection, s.name)
           })
@@ -656,9 +690,13 @@ export default class {
         })
 
         this.tracks = this.tracks.concat(tracks)
+        // this.tracks = this.tracks.concat(tracks).filter(t => !t.isHidden())
+        // this.hiddenTracks = this.hiddenTracks.concat(tracks).filter(t => {
+        //   console.log(t)
+        //   return t.isHidden()
+        // })
         this.adjustDuration()
         this.draw(this.render())
-        console.log(this.tracks)
 
         this.ee.emit("audiosourcesrendered")
       })
@@ -1204,20 +1242,27 @@ export default class {
   }
 
   renderTrackSection() {
-    const trackElements = this.tracks.map(track => {
+    const trackElements = this.tracks.reduce((trackEls, track) => {
+      console.log("RENDERING", track)
       const collapsed = this.collapsedTracks.indexOf(track) > -1
-      return track.render(
-        this.getTrackRenderData({
-          isActive: this.isActiveTrack(track),
-          isLastTrack: this.isLastTrack(track),
-          shouldPlay: this.shouldTrackPlay(track),
-          soloed: this.soloedTracks.indexOf(track) > -1,
-          muted: this.mutedTracks.indexOf(track) > -1,
-          collapsed,
-          height: collapsed ? this.collapsedWaveHeight : this.waveHeight,
-        })
-      )
-    })
+      if (!track.hidden) {
+        trackEls.push(
+          track.render(
+            this.getTrackRenderData({
+              coloredSelections: this.getColoredSelections(),
+              isActive: this.isActiveTrack(track),
+              isLastTrack: this.isLastTrack(track),
+              shouldPlay: this.shouldTrackPlay(track),
+              soloed: this.soloedTracks.indexOf(track) > -1,
+              muted: this.mutedTracks.indexOf(track) > -1,
+              collapsed,
+              height: collapsed ? this.collapsedWaveHeight : this.waveHeight,
+            })
+          )
+        )
+      }
+      return trackEls
+    }, [])
 
     return h(
       "div.playlist-tracks",
