@@ -12,7 +12,7 @@ export default async function loadLocalStorageAudioTracks(playlist, tracks) {
         let src = track.src
         if (typeof src === "object") {
           src = await localForage.getItem(
-            `musicPlayer::${oldPlayList.getName()}::BUFFER`
+            `musicPlayer::${oldPlayList.name}::BUFFER`
           )
         }
         return {
