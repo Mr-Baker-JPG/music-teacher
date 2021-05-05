@@ -105,6 +105,8 @@ export default class {
       (trackStart <= start && trackEnd >= start) ||
       (trackStart <= end && trackEnd >= end)
     ) {
+      console.log("CUEIN", start < trackStart, trackStart, start)
+      console.log("CUEOUT", end > trackEnd, trackEnd, end)
       const cueIn = start < trackStart ? trackStart : start
       const cueOut = end > trackEnd ? trackEnd : end
 
