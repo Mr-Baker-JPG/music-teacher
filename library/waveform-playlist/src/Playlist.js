@@ -88,6 +88,7 @@ export default class {
     this.isAutomaticScroll = false
     this.resetDrawTimer = undefined
     this.isLooping = true
+    this.name = ""
   }
 
   // TODO extract into a plugin
@@ -153,6 +154,14 @@ export default class {
       this.working = false
       this.drawRequest()
     }
+  }
+
+  setName(name) {
+    this.name = name
+  }
+
+  getName() {
+    return this.name
   }
 
   setShowTimeScale(show) {
@@ -237,7 +246,10 @@ export default class {
 
     ee.on("audiorenderingfinished", async (type, data) => {
       if (type == "wav") {
-        await localForage.setItem("musicPlayer::BUFFER", data)
+        await localForage.setItem(
+          `musicPlayer::${this.getName()}::BUFFER`,
+          data
+        )
         this.tracks = this.collapsedTracks
         this.load([
           {
@@ -1197,7 +1209,7 @@ export default class {
 
   draw(newTree) {
     window.localStorage.setItem(
-      "musicPlayer",
+      `musicPlayer::${this.getName()}`,
       JSON.stringify(JSON.decycle(this))
     )
     const patches = diff(this.tree, newTree)

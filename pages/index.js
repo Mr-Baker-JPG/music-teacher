@@ -76,6 +76,7 @@ export default function Home() {
               tracks={tracks}
               shortCuts={shortCuts}
               timeSignature={timeSignature}
+              name="Test"
             />
           </div>
         </article>
