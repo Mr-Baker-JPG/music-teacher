@@ -326,7 +326,7 @@ export default class {
     })
 
     ee.on("resettracks", () => {
-      window.localStorage.removeItem("musicPlayer")
+      window.localStorage.removeItem(`musicPlayer::${this.getName()}`)
       window.location.reload()
     })
 
