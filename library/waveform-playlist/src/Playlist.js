@@ -51,14 +51,6 @@ const copyActiveTrack = async playlist => {
 
   const selections = activeTrack.getColorSelections()
   selections.forEach(s => {
-    console.log(
-      copy.getStartTime(),
-      s.timeSelection.end,
-      copy.getStartTime() > s.timeSelection.end,
-      copy.getEndTime(),
-      s.timeSelection.start,
-      copy.getEndTime() < s.timeSelection.start
-    )
     if (
       !(copy.getStartTime() > s.timeSelection.end) &&
       !(copy.getEndTime() < s.timeSelection.start)
@@ -242,10 +234,6 @@ export default class {
 
   setUpEventEmitter() {
     const ee = this.ee
-
-    ee.on("audiosourcesrendered", t => {
-      console.log(t, this)
-    })
 
     ee.on("audiorenderingfinished", async (type, data) => {
       if (type == "wav") {
@@ -531,10 +519,7 @@ export default class {
     })
 
     ee.on("mutebacking", () => {
-      console.log("MUTING")
-      console.log(this.hiddenTracks)
       this.tracks.forEach(track => {
-        console.log("muting", track)
         if (track.hidden && track.name === "backing") {
           this.muteTrack(track)
         }
@@ -544,10 +529,7 @@ export default class {
     })
 
     ee.on("mutemetro", () => {
-      console.log("MUTING")
-      console.log(this.hiddenTracks)
       this.tracks.forEach(track => {
-        console.log("muting", track)
         if (track.hidden && track.name === "metronome") {
           this.muteTrack(track)
         }
@@ -892,7 +874,6 @@ export default class {
     this.tracks.forEach(track => {
       track.calculatePeaks(zoom, this.sampleRate)
     })
-    console.log(this.zoomLevels)
   }
 
   muteTrack(track) {
