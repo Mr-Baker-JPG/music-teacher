@@ -59,6 +59,7 @@ export default function Home() {
               setEmitter={setEmitter}
               tracks={tracks}
               shortCuts={shortCuts}
+              name="page2"
             />
           </div>
         </article>

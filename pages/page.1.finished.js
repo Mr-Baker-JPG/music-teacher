@@ -80,6 +80,7 @@ export default function Home() {
               tracks={tracks}
               shortCuts={shortCuts}
               timeSignature={timeSignature}
+              name="page1.finished"
             />
           </div>
         </article>
