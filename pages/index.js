@@ -11,7 +11,7 @@ import TimeScale from "../library/waveform-playlist/src/TimeScale"
 const tracks = [
   {
     src: "media/Reflections.3.mp3",
-    zoomLevels: [500, 1000, 3000, 5000],
+    zoomLevels: [50, 100, 200, 500, 1000, 3000, 5000],
     name: "Vocals",
     // selections: [
     //   {
@@ -26,7 +26,7 @@ const tracks = [
   },
   {
     src: "media/106.Metro.mp3",
-    zoomLevels: [512],
+    zoomLevels: [50, 100, 200, 500, 1000, 3000, 5000],
     hidden: true,
     states: {
       shift: false,
@@ -35,7 +35,7 @@ const tracks = [
   },
   {
     src: "media/106.Brushes.mp3",
-    zoomLevels: [512],
+    zoomLevels: [50, 100, 200, 500, 1000, 3000, 5000],
     hidden: true,
     states: {
       shift: false,

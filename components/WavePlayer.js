@@ -25,7 +25,7 @@ function WavePlayer({
     const init = async () => {
       let playlist = WaveformPlaylist({
         samplesPerPixel: 3000,
-        zoomLevels: [500, 1000, 3000, 5000],
+        zoomLevels: [12, 25, 50, 100, 200, 500, 1000, 3000, 5000],
         mono: true,
         waveHeight: 100,
         container: waveFormNode,

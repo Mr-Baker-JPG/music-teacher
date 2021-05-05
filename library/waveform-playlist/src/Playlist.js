@@ -892,6 +892,7 @@ export default class {
     this.tracks.forEach(track => {
       track.calculatePeaks(zoom, this.sampleRate)
     })
+    console.log(this.zoomLevels)
   }
 
   muteTrack(track) {
