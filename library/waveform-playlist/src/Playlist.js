@@ -51,14 +51,6 @@ const copyActiveTrack = async playlist => {
 
   const selections = activeTrack.getColorSelections()
   selections.forEach(s => {
-    console.log(
-      copy.getStartTime(),
-      s.timeSelection.end,
-      copy.getStartTime() > s.timeSelection.end,
-      copy.getEndTime(),
-      s.timeSelection.start,
-      copy.getEndTime() < s.timeSelection.start
-    )
     if (
       !(copy.getStartTime() > s.timeSelection.end) &&
       !(copy.getEndTime() < s.timeSelection.start)
@@ -96,6 +88,7 @@ export default class {
     this.isAutomaticScroll = false
     this.resetDrawTimer = undefined
     this.isLooping = true
+    this.name = ""
   }
 
   // TODO extract into a plugin
@@ -161,6 +154,14 @@ export default class {
       this.working = false
       this.drawRequest()
     }
+  }
+
+  setName(name) {
+    this.name = name
+  }
+
+  getName() {
+    return this.name
   }
 
   setShowTimeScale(show) {
@@ -243,13 +244,12 @@ export default class {
   setUpEventEmitter() {
     const ee = this.ee
 
-    ee.on("audiosourcesrendered", t => {
-      console.log(t, this)
-    })
-
     ee.on("audiorenderingfinished", async (type, data) => {
       if (type == "wav") {
-        await localForage.setItem("musicPlayer::BUFFER", data)
+        await localForage.setItem(
+          `musicPlayer::${this.getName()}::BUFFER`,
+          data
+        )
         this.tracks = this.collapsedTracks
         this.load([
           {
@@ -286,7 +286,7 @@ export default class {
       if (this.isPlaying()) {
         this.lastSeeked = start
         this.pausedAt = undefined
-        // this.restartPlayFrom(0)
+        this.restartPlayFrom(0)
       } else {
         // reset if it was paused.
         this.seek(start, end, track)
@@ -337,6 +337,22 @@ export default class {
       }
 
       activeTrack.setStartTime(activeTrack.getStartTime() + deltaTime)
+
+      if (movingLeft(deltaTime)) {
+        ee.emit(
+          "select",
+          activeTrack.getStartTime() + deltaTime,
+          activeTrack.getStartTime() + deltaTime,
+          activeTrack
+        )
+      } else if (movingRight(deltaTime)) {
+        ee.emit(
+          "select",
+          activeTrack.getEndTime(),
+          activeTrack.getEndTime(),
+          activeTrack
+        )
+      }
 
       this.tracks.forEach(track => {
         if (!track.hidden) {
@@ -413,6 +429,12 @@ export default class {
           }
         })
       }
+      ee.emit(
+        "select",
+        activeTrack.getEndTime(),
+        activeTrack.getEndTime(),
+        activeTrack
+      )
       activeTrack.calculatePeaks(this.samplesPerPixel, this.sampleRate)
       this.adjustDuration()
       this.drawRequest()
@@ -448,6 +470,12 @@ export default class {
         )
         // track.setStartTime(track.getStartTime() + deltaTime)
       }
+      ee.emit(
+        "select",
+        activeTrack.getStartTime(),
+        activeTrack.getStartTime(),
+        activeTrack
+      )
       activeTrack.calculatePeaks(this.samplesPerPixel, this.sampleRate)
       this.adjustDuration()
       this.drawRequest()
@@ -480,10 +508,13 @@ export default class {
     // TODO: Craig HERE
     ee.on("finished", function () {
       if (this.isLooping) {
-        let playoutPromises = this.play(0, 0)
-        playoutPromises.then(function () {
-          playoutPromises = playlist.play(0, 0)
-        })
+        this.scrollLeft = 0
+        this.ee.emit("select", 0, 0)
+        this.ee.emit("play")
+        //   let playoutPromises = this.play(0, 0)
+        //   playoutPromises.then(function () {
+        //     playoutPromises = playlist.play(0, 0)
+        //   })
       }
     })
 
@@ -500,27 +531,21 @@ export default class {
     })
 
     ee.on("mutebacking", () => {
-      console.log("MUTING")
-      console.log(this.hiddenTracks)
-      this.tracks.forEach(track=>{
-        console.log("muting", track)
-        if(track.hidden && track.name ==="backing"){
+      this.tracks.forEach(track => {
+        if (track.hidden && track.name === "backing") {
           this.muteTrack(track)
         }
-      })  
+      })
       this.adjustTrackPlayout()
       this.drawRequest()
     })
 
     ee.on("mutemetro", () => {
-      console.log("MUTING")
-      console.log(this.hiddenTracks)
-      this.tracks.forEach(track=>{
-        console.log("muting", track)
-        if(track.hidden && track.name ==="metronome"){
+      this.tracks.forEach(track => {
+        if (track.hidden && track.name === "metronome") {
           this.muteTrack(track)
         }
-      })  
+      })
       this.adjustTrackPlayout()
       this.drawRequest()
     })
@@ -765,16 +790,18 @@ export default class {
 
     const currentTime = this.offlineAudioContext.currentTime
 
-    this.tracks.forEach(track => {
-      track.setOfflinePlayout(
-        new Playout(this.offlineAudioContext, track.buffer)
-      )
-      track.schedulePlay(currentTime, 0, 0, {
-        shouldPlay: this.shouldTrackPlay(track),
-        masterGain: 1,
-        isOffline: true,
+    this.tracks
+      .filter(t => !t.hidden)
+      .forEach(track => {
+        track.setOfflinePlayout(
+          new Playout(this.offlineAudioContext, track.buffer)
+        )
+        track.schedulePlay(currentTime, 0, 0, {
+          shouldPlay: this.shouldTrackPlay(track),
+          masterGain: 1,
+          isOffline: true,
+        })
       })
-    })
 
     /*
       TODO cleanup of different audio playouts handling.
@@ -984,6 +1011,7 @@ export default class {
 
   play(startTime, endTime) {
     clearTimeout(this.resetDrawTimer)
+    this.cursor = 0
 
     const currentTime = this.ac.currentTime
     const selected = this.getTimeSelection()
@@ -1181,7 +1209,7 @@ export default class {
 
   draw(newTree) {
     window.localStorage.setItem(
-      "musicPlayer",
+      `musicPlayer::${this.getName()}`,
       JSON.stringify(JSON.decycle(this))
     )
     const patches = diff(this.tree, newTree)
@@ -1262,7 +1290,6 @@ export default class {
 
   renderTrackSection() {
     const trackElements = this.tracks.reduce((trackEls, track) => {
-      console.log("RENDERING", track)
       const collapsed = this.collapsedTracks.indexOf(track) > -1
       if (!track.hidden) {
         trackEls.push(

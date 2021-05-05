@@ -282,7 +282,7 @@ export default class {
     let when = now
     let segment = endTime ? endTime - startTime : undefined
 
-    startTime = Object.is(startTime) ? startTime.startTime : startTime
+    // startTime = Object.is(startTime) ? startTime.startTime : startTime
 
     const defaultOptions = {
       shouldPlay: true,
@@ -633,9 +633,9 @@ export default class {
             const selectWidth =
               secondsToPixels(
                 _this.startTime >= start
-                  ? _this.startTime + end - _this.startTime
+                  ? end - _this.startTime
                   : _this.endTime - start < end - start
-                  ? _this.startTime + _this.endTime - start
+                  ? _this.endTime - start
                   : _this.startTime + end - start,
                 data.resolution,
                 data.sampleRate

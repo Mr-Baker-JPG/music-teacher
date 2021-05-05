@@ -88,6 +88,7 @@ export function init(options = {}, ee = EventEmitter()) {
   playlist.isAutomaticScroll = config.isAutomaticScroll
   playlist.isContinuousPlay = config.isContinuousPlay
   playlist.linkedEndpoints = config.linkedEndpoints
+  playlist.setName(config.name)
 
   // take care of initial virtual dom rendering.
   const tree = playlist.render()

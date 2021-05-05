@@ -4,14 +4,16 @@ cycle()
 
 export default async function loadLocalStorageAudioTracks(playlist, tracks) {
   const storage = window.localStorage
-  let oldPlayList = storage.getItem("musicPlayer")
+  let oldPlayList = storage.getItem(`musicPlayer::${playlist.getName()}`)
   if (oldPlayList) {
     oldPlayList = JSON.retrocycle(JSON.parse(oldPlayList))
     const tracks = await Promise.all(
       oldPlayList.tracks.map(async track => {
         let src = track.src
         if (typeof src === "object") {
-          src = await localForage.getItem("musicPlayer::BUFFER")
+          src = await localForage.getItem(
+            `musicPlayer::${oldPlayList.getName()}::BUFFER`
+          )
         }
         return {
           src,
@@ -40,6 +42,9 @@ export default async function loadLocalStorageAudioTracks(playlist, tracks) {
     playlist.drawRequest()
   } else {
     await playlist.load(tracks)
-    storage.setItem("musicPlayer", JSON.stringify(JSON.decycle(playlist)))
+    storage.setItem(
+      `musicPlayer::${playlist.getName()}`,
+      JSON.stringify(JSON.decycle(playlist))
+    )
   }
 }

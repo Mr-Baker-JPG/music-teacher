@@ -16,6 +16,7 @@ function WavePlayer({
     noteValue: 4,
   },
   selections = [],
+  name = "",
 }) {
   const waveFormRef = React.useRef(null)
 
@@ -25,7 +26,7 @@ function WavePlayer({
     const init = async () => {
       let playlist = WaveformPlaylist({
         samplesPerPixel: 3000,
-        zoomLevels: [500, 1000, 3000, 5000],
+        zoomLevels: [12, 25, 50, 100, 200, 500, 1000, 3000, 5000],
         mono: true,
         waveHeight: 100,
         container: waveFormNode,
@@ -34,6 +35,7 @@ function WavePlayer({
         isAutomaticScroll: true,
         showTimeSignature: true,
         timeSignature,
+        name,
         selections,
         waveOutlineColor: "#E0EFF1",
         colors: {
