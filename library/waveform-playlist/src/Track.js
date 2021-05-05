@@ -57,7 +57,7 @@ export default class {
     color = "green"
   ) {
     this.colorSelections.push({ name, timeSelection, color })
-    console.log(this.selections)
+    // console.log(this.selections)
   }
 
   removeColorSelection(name) {
@@ -613,17 +613,17 @@ export default class {
       channelChildren.push(
         ...this.colorSelections.reduce(
           (children, { color, name, timeSelection: { start, end } }) => {
-            console.log(
-              "timeselection",
-              start,
-              end,
-              "track",
-              width,
-              _this.startTime,
-              _this.endTime,
-              _this.cueIn,
-              _this.cueOut
-            )
+            // console.log(
+            //   "timeselection",
+            //   start,
+            //   end,
+            //   "track",
+            //   width,
+            //   _this.startTime,
+            //   _this.endTime,
+            //   _this.cueIn,
+            //   _this.cueOut
+            // )
             // if (start - this.cueIn > 0 && this.cueOut - end > 0) {
             const selectLeft = secondsToPixels(
               _this.cueIn >= start ? 0 : start - _this.startTime,
