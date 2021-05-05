@@ -627,11 +627,16 @@ export default class {
             // )
             // if (start - this.cueIn > 0 && this.cueOut - end > 0) {
             const selectLeft = secondsToPixels(
-              _this.cueIn >= start ? 0 : start - _this.startTime,
+              _this.cueIn >= start
+                ? 0
+                : start - _this.startTime < 0
+                ? 0
+                : start - _this.startTime,
               data.resolution,
               data.sampleRate
             )
-            const selectWidth =
+
+            let selectWidth =
               secondsToPixels(
                 _this.startTime >= start
                   ? end - _this.startTime
@@ -641,6 +646,10 @@ export default class {
                 data.resolution,
                 data.sampleRate
               ) - 1
+
+            if (selectWidth > Math.min(totalWidth, MAX_CANVAS_WIDTH)) {
+              selectWidth = Math.min(totalWidth, MAX_CANVAS_WIDTH)
+            }
             children.push(
               h("div.channel-selection", {
                 attributes: {
