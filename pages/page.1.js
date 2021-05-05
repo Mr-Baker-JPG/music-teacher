@@ -13,16 +13,16 @@ const tracks = [
     src: "media/Reflections.3.mp3",
     zoomLevels: [500, 1000, 3000, 5000],
     name: "Vocals",
-    // selections: [
-    //   {
-    //     color: "green",
-    //     name:"I",
-    //     timeSelection: {
-    //       start: 1,
-    //       end: 4,
-    //     },
-    //   },
-    // ],
+    selections: [
+      {
+        color: "green",
+        name:"I",
+        timeSelection: {
+          start: 0,
+          end: 2,
+        },
+      },
+    ],
   },
   {
     src: "media/106.Metro.mp3",
@@ -67,7 +67,7 @@ export default function Home() {
       <div className="wrapper">
         <article className="post">
           <header className="post-header">
-            <h1 className="post-title">Individual Track State</h1>
+            <h1 className="post-title">Tempo Allignment</h1>
             <p className="lead">
               Reflections in D- Duke Ellington
             </p>
@@ -84,12 +84,9 @@ export default function Home() {
           </div>
         </article>
       </div>
-      <p>The sample here is at a slower tempo then the metronome. Trim the sample to just the highlighted areas and allign them with the project tempo.</p>
+      <p>Samples typcially come in tempos very different from what a producer may need for a particular song. This one slows down towards the end and becomes out of sync wih our drum track. Trim the chords so that each lines up with the project BPM. (Hint: The highest/loudest points of the audio file show where a new chord is played. Align those peaks with the metronome notches).</p>
       <br></br>
-      <p>Duke Ellington-"From 1926 until his death in 1974, Duke Ellington was an enduring
-presence on American airwaves, first as a curiosity on local radio, then as
-an exotic attraction on network radio, and finally as a senior statesman
-as part of the sputtering endgame of jazz on American television"</p>
+      <p>Duke Ellington was an influential jazz composer, band leader, and pianist with a prolific career. He wrote colorful chord progressions utilizing the 7th, 9th, and 11th degree of scales in many well-respected songs. Reflections in D is one of his solo piano compositions.</p>
     </main>
   )
 }
