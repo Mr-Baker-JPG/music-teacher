@@ -13,16 +13,16 @@ const tracks = [
     src: "media/Reflections.3.mp3",
     zoomLevels: [50, 100, 200, 500, 1000, 3000, 5000],
     name: "Vocals",
-    // selections: [
-    //   {
-    //     color: "green",
-    //     name:"I",
-    //     timeSelection: {
-    //       start: 1,
-    //       end: 4,
-    //     },
-    //   },
-    // ],
+    colorSelections: [
+      {
+        color: "green",
+        name: "I",
+        timeSelection: {
+          start: 1,
+          end: 4,
+        },
+      },
+    ],
   },
   {
     src: "media/106.Metro.mp3",
