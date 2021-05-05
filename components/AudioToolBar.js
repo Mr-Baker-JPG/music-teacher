@@ -108,7 +108,7 @@ const AudioToolBar = ({ emitter }) => {
               }}
               icon={faHeadphones}
             />
-            <Button
+            {/* <Button
               title="Select audio region"
               className={`btn-outline-dark ${
                 stateButton === STATE_SELECT && "active"
@@ -119,7 +119,7 @@ const AudioToolBar = ({ emitter }) => {
                 setStateButton(STATE_SELECT)
               }}
               icon={faItalic}
-            />
+            /> */}
             <Button
               title="Shift audio in time"
               className={`btn-outline-dark ${

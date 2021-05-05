@@ -96,9 +96,23 @@ export default function HelpModal({ show, handleClose }) {
           onClick={e => {}}
           icon={faArrowRight}
         />
-        <p>Resize the left/right side of a clip.</p>
-        <p>(gif) alligning chord to project tempo</p>
-        <br></br>
+        <br />
+        <ul>
+        <li>Zoom in/out</li>
+        <li>Toggle backing track</li>
+        <li>Toggle metronome</li>
+        <li>Click + x to cut audio clip</li>
+        <li>Click and drag to shift audio clip</li>
+        <li>Click and drag to resize the left/right side of a clip.</li>
+        </ul>
+    <br />
+    Image
+    <p>
+        This is an audio clip.
+    </p>
+    <p>
+        The wide and thin portions of an audio clip show where the audio is louder or quieter (typically where an instrument is playing). This visual can be used to guide where the clip needs to be changed so that it matches the desired tempo. Here a clip is shifted to match the project tempo.
+    </p>
       </Modal.Body>
     </Modal>
   )

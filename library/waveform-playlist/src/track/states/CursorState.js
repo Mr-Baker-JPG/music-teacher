@@ -30,6 +30,7 @@ export default class {
 
   click(e) {
     e.preventDefault()
+    this.track.ee.emit("consoletime")
 
     const startX = e.offsetX
     const startTime = pixelsToSeconds(

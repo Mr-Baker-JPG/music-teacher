@@ -405,6 +405,10 @@ export default class {
       }
     })
 
+    ee.on("consoletime", () => {
+      console.log("working", this.cursor)
+    })
+
     ee.on("resizeright", (deltaTime, activeTrack) => {
       if (deltaTime === 0) return
       if (movingLeft(deltaTime)) {
