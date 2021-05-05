@@ -57,6 +57,6 @@ export default class {
   }
 
   static getEvents() {
-    return ["click", "mouseenter", "mousemove"]
+    return ["click"]
   }
 }
