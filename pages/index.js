@@ -2,25 +2,12 @@ import * as React from "react"
 import _ from "lodash"
 import Head from "next/head"
 
-// Aaron, include the following:
-import { Modal } from "react-bootstrap"
-import Button from "../components/Button"
-import {
-  faArrowLeft,
-  faArrowRight,
-  faArrowsAltH,
-  faHeadphones,
-  faSearchMinus,
-  faSearchPlus,
-} from "@fortawesome/free-solid-svg-icons"
-
-// STOP
-
 import styles from "../styles/Home.module.css"
 import WaveformPlaylist from "../library/waveform-playlist/src/app"
 import WavePlayer from "../components/WavePlayer"
 import AudioToolBar from "../components/AudioToolBar"
 import TimeScale from "../library/waveform-playlist/src/TimeScale"
+import HelpModal, { HelpLink, ModalLink } from "../components/HelpModal"
 
 const tracks = [
   {
@@ -74,10 +61,13 @@ const timeSignature = {
 
 export default function Home() {
   const [emitter, setEmitter] = React.useState(null)
+
+  // Aaron, add the following
   const [show, setShow] = React.useState(false)
 
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
+  // STOP
 
   return (
     <main className="container">
@@ -106,96 +96,13 @@ export default function Home() {
       <br></br>
       <p>
         Duke Ellington-"From 1926 until his death in 1974,{" "}
-        <a
-          style={{ color: "blue", textDecoration: "underline" }}
-          onClick={handleShow}
-        >
-          Duke Ellington
-        </a>{" "}
-        was an enduring presence on American airwaves, first as a curiosity on
-        local radio, then as an exotic attraction on network radio, and finally
-        as a senior statesman as part of the sputtering endgame of jazz on
-        American television"
+        <ModalLink handleShow={handleShow}>Duke Ellington</ModalLink> was an
+        enduring presence on American airwaves, first as a curiosity on local
+        radio, then as an exotic attraction on network radio, and finally as a
+        senior statesman as part of the sputtering endgame of jazz on American
+        television"
       </p>
-
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Music Teacher::Help</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Button
-            title="Zoom in"
-            className={`btn-outline-dark`}
-            onClick={() => {}}
-            icon={faSearchPlus}
-          />
-          <Button
-            title="Zoom out"
-            className={`btn-outline-dark`}
-            onClick={() => {}}
-            icon={faSearchMinus}
-          />
-          <p>Zoom in/out</p>
-          <br></br>
-          <Button
-            title={"Backing Off"}
-            className={`btn-outline-dark`}
-            onClick={e => {}}
-          />
-
-          <Button
-            title={"Backing Off"}
-            className={`btn-outline-dark`}
-            onClick={e => {}}
-          />
-          <p>Toggles backing track</p>
-          <br></br>
-          <Button
-            title={"Metronome Off"}
-            className={`btn-outline-dark`}
-            onClick={e => {}}
-          />
-
-          <Button
-            title={"Metronome Off"}
-            className={`btn-outline-dark`}
-            onClick={e => {}}
-          />
-          <p>Toggles metronome</p>
-          <br></br>
-          <Button
-            title="Select cursor"
-            className={`btn-outline-dark `}
-            onClick={e => {}}
-            icon={faHeadphones}
-          />
-          <p>Click + x to cut audio clip</p>
-          <br></br>
-          <Button
-            title="Shift audio in time"
-            className={`btn-outline-dark `}
-            onClick={e => {}}
-            icon={faArrowsAltH}
-          />
-          <p>Click and drag to shift audio clip</p>
-          <br></br>
-          <Button
-            className={`btn-outline-dark `}
-            title="Resize audio clip from the left"
-            onClick={e => {}}
-            icon={faArrowLeft}
-          />
-          <Button
-            className={`btn-outline-dark `}
-            title="Resize audio clip from the right"
-            onClick={e => {}}
-            icon={faArrowRight}
-          />
-          <p>Resize the left/right side of a clip.</p>
-          <p>(gif) alligning chord to project tempo</p>
-          <br></br>
-        </Modal.Body>
-      </Modal>
+      <HelpModal handleClose={handleClose} show={show} />
     </main>
   )
 }
