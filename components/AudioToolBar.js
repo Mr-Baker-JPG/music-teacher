@@ -195,7 +195,7 @@ const AudioToolBar = ({ emitter }) => {
               className={`btn-outline-dark`}
               onClick={e => {
                 setIsMutedMetronome(!isMutedMetronome)
-                emitter.emit("mutemetronome")
+                emitter.emit("mutemetro")
               }}
             />
           </ButtonGroup>

@@ -9,9 +9,27 @@ import AudioToolBar from "../components/AudioToolBar"
 
 const tracks = [
   {
-    src: "media/Ella.Piano.mp3",
+    src: "media/85.piano.mp3",
     name: "Vocals",
   },
+  {
+    src: "media/85.metro.mp3",
+    zoomLevels: [512],
+    hidden: true,
+    states:{
+      shift: false,
+    },
+    name: "metronome",
+  },
+  {
+    src: "media/85.backing.mp3",
+    zoomLevels: [512],
+    hidden: true,
+    states:{
+      shift: false,
+    },
+    name: "backing",
+  }
 ]
 
 const shortCuts = [
@@ -41,6 +59,7 @@ export default function Home() {
               setEmitter={setEmitter}
               tracks={tracks}
               shortCuts={shortCuts}
+              name="page3"
             />
           </div>
         </article>

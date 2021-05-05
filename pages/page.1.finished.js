@@ -10,12 +10,12 @@ import TimeScale from "../library/waveform-playlist/src/TimeScale"
 
 const tracks = [
   {
-    src: "media/Reflections.3.mp3",
+    src: "media/Reflections.3.finished.mp3",
     zoomLevels: [500, 1000, 3000, 5000],
-    name: "Vocals",
+    name: "main",
     selections: [
       {
-        color: "green",
+        color: "blue",
         name:"I",
         timeSelection: {
           start: 0,
@@ -67,7 +67,7 @@ export default function Home() {
       <div className="wrapper">
         <article className="post">
           <header className="post-header">
-            <h1 className="post-title">Tempo Allignment</h1>
+            <h1 className="post-title">(Guided) Tempo Alligment</h1>
             <p className="lead">
               Reflections in D- Duke Ellington
             </p>
@@ -80,13 +80,14 @@ export default function Home() {
               tracks={tracks}
               shortCuts={shortCuts}
               timeSignature={timeSignature}
-              name="page1"
+              name="page1.finished"
             />
           </div>
         </article>
       </div>
-      <p>Samples typcially come in tempos very different from what a producer may need for a particular song. This one slows down towards the end and becomes out of sync wih our drum track. Trim the chords so that each lines up with the project BPM. (Hint: The highest/loudest points of the audio file show where a new chord is played. Align those peaks with the metronome notches).</p>
+      <p>Samples typcially come in tempos very different from what a producer may need for a particular song. This one slows down towards the end and becomes out of sync wih our drum track. Trim the chords so that each lines up with the project BPM. (Hint: The highest/loudest points of the audio file show where a new chord is played. Align those peaks with the metronome notches). </p>
       <br></br>
+      <h4>Duke Ellington</h4>
       <p>Duke Ellington was an influential jazz composer, band leader, and pianist with a prolific career. He wrote colorful chord progressions utilizing the 7th, 9th, and 11th degree of scales in many well-respected songs. Reflections in D is one of his solo piano compositions.</p>
     </main>
   )
