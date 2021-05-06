@@ -105,12 +105,11 @@ export default class {
       (trackStart <= start && trackEnd >= start) ||
       (trackStart <= end && trackEnd >= end)
     ) {
-      console.log("CUEIN", start < trackStart, trackStart, start)
-      console.log("CUEOUT", end > trackEnd, trackEnd, end)
       const cueIn = start < trackStart ? trackStart : start
       const cueOut = end > trackEnd ? trackEnd : end
 
-      this.setCues(cueIn + offset, cueOut + offset)
+      if (cueIn + offset < cueOut + offset)
+        this.setCues(cueIn + offset, cueOut + offset)
       if (start > trackStart) {
         this.setStartTime(start)
       }
@@ -628,11 +627,16 @@ export default class {
             // )
             // if (start - this.cueIn > 0 && this.cueOut - end > 0) {
             const selectLeft = secondsToPixels(
-              _this.cueIn >= start ? 0 : start - _this.startTime,
+              _this.cueIn >= start
+                ? 0
+                : start - _this.startTime < 0
+                ? 0
+                : start - _this.startTime,
               data.resolution,
               data.sampleRate
             )
-            const selectWidth =
+
+            let selectWidth =
               secondsToPixels(
                 _this.startTime >= start
                   ? end - _this.startTime
@@ -642,6 +646,10 @@ export default class {
                 data.resolution,
                 data.sampleRate
               ) - 1
+
+            if (selectWidth > Math.min(totalWidth, MAX_CANVAS_WIDTH)) {
+              selectWidth = Math.min(totalWidth, MAX_CANVAS_WIDTH)
+            }
             children.push(
               h("div.channel-selection", {
                 attributes: {
