@@ -106,13 +106,15 @@ export default function HelpModal({ show, handleClose }) {
         <li>Click and drag to resize the left/right side of a clip.</li>
         </ul>
     <br />
-    Image
+    <img src="media/audioClipExample.png" />
     <p>
         This is an audio clip.
     </p>
     <p>
         The wide and thin portions of an audio clip show where the audio is louder or quieter (typically where an instrument is playing). This visual can be used to guide where the clip needs to be changed so that it matches the desired tempo. Here a clip is shifted to match the project tempo.
     </p>
+    <img src="media/audioClipBefore.png" />
+    <img src="media/audioClipAfter.png" />
       </Modal.Body>
     </Modal>
   )

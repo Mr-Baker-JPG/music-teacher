@@ -12,7 +12,7 @@ export default function HelpModal() {
         <Modal.Title>Web DAW Teacher</Modal.Title>
       </Modal.Header>
       <p>
-        Hello. Greetings. Hola.
+        This is my prototype for Web DAW Teacher: a web-based interactive tool to teach the basics of Digital Audio Workstations (DAWs). This sample tutorial page demonstrates the potential for external and teacher-created lessons to teach music history, composition, and DAW aptitude.
       </p>
       <Modal.Body>
         
